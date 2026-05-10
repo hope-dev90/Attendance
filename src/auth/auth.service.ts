@@ -1,39 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from '../users/user.entity';
+import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private userRepo: Repository<User>,
+    private usersService: UsersService,
+    private jwtService: JwtService,
   ) {}
 
-  async signup(username: string, password: string) {
-    const existing = await this.userRepo.findOne({
-      where: { username },
-    });
+  login(username: string, password: string) {
+    const user = this.usersService.findOne(username);
 
-    if (existing) {
-      return { message: 'User already exists' };
-    }
-
-    const user = this.userRepo.create({ username, password });
-    await this.userRepo.save(user);
-
-    return { message: 'User created successfully' };
-  }
-
-  async login(username: string, password: string) {
-    const user = await this.userRepo.findOne({
-      where: { username, password },
-    });
-
-    if (!user) {
+    if (!user || user.password !== password) {
       return { message: 'Invalid credentials' };
     }
 
-    return { message: 'Login successful' };
+    const payload = {
+      username: user.username,
+      sub: user.id,
+    };
+
+    return {
+      access_token: this.jwtService.sign(payload), 
+    };
   }
 }
