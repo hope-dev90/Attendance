@@ -31,19 +31,88 @@ const sendOTPEmail = async (email, fullName, otp) => {
   }
 
   try {
+    const otpDigits = otp.split('');
     await transporter.sendMail({
-      from: `Class Rep System <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Your Verification Code',
-      html: `
-      <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:2rem;border:1px solid #e2e8f0;border-radius:8px;">
-        <h2 style="color:#2563eb;">Verify your account</h2>
-        <p>Hi <strong>${fullName}</strong>,</p>
-        <p>Use the code below to verify your Class Rep account. It expires in <strong>10 minutes</strong>.</p>
-        <div style="font-size:2.5rem;font-weight:bold;letter-spacing:0.5rem;text-align:center;padding:1.5rem;background:#f1f5f9;border-radius:8px;margin:1.5rem 0;">
-          ${otp}
+    from: `Class Rep System <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: 'Your Verification Code',
+    html: `
+      <div style="font-family: 'DM Sans', sans-serif; max-width: 480px; margin: auto;">
+        <!-- Header -->
+        <div style="background-color: #1e3f63; padding: 24px 32px; border-radius: 20px 20px 0 0;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="background: white; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2e5a88" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            </div>
+            <div>
+              <div style="color: white; font-weight: 700; font-size: 18px;">Class Rep</div>
+              <div style="color: #a8c4e0; font-size: 12px;">Student management system</div>
+            </div>
+          </div>
         </div>
-        <p style="color:#64748b;font-size:0.875rem;">If you didn't create this account, ignore this email.</p>
+        
+        <!-- Body -->
+        <div style="background: white; padding: 32px; border-radius: 0 0 20px 20px; border: 1px solid #dde3ed;">
+          <!-- Icon -->
+          <div style="display: flex; justify-content: center; margin-bottom: 24px;">
+            <div style="background: #f4f7fc; width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2e5a88" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Heading and Greeting -->
+          <h2 style="color: #001f3f; margin: 0 0 16px 0; text-align: center; font-size: 24px; font-weight: 700;">
+            Verify your account
+          </h2>
+          <p style="color: #4a5568; margin: 0 0 24px 0; text-align: center; line-height: 1.6;">
+            Hi <strong style="color: #2e5a88;">${fullName}</strong>,<br/>
+            Use the code below to verify your Class Rep account. It expires in <strong style="color: #2e5a88;">10 minutes</strong>.
+          </p>
+          
+          <!-- OTP Display -->
+          <div style="background: #f4f7fc; padding: 24px; border-radius: 16px; margin-bottom: 24px;">
+            <div style="text-align: center; color: #8898aa; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px;">
+              YOUR VERIFICATION CODE
+            </div>
+            <div style="display: flex; justify-content: center; gap: 8px;">
+              ${otpDigits.map(digit => `
+                <div style="width: 48px; height: 56px; background: white; border: 1.5px solid #2e5a88; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #001f3f;">
+                  ${digit}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <!-- Info Notice -->
+          <div style="background: #eef5fe; border: 1px solid #c8daf5; border-radius: 12px; padding: 16px; display: flex; gap: 12px; margin-bottom: 32px;">
+            <div style="flex-shrink: 0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e5a88" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+            </div>
+            <p style="color: #4a6a98; margin: 0; font-size: 14px; line-height: 1.5;">
+              If you didn't create this account, ignore this email.
+            </p>
+          </div>
+          
+          <!-- Footer -->
+          <div style="border-top: 1px solid #e5e7eb; padding-top: 24px; text-align: center;">
+            <p style="color: #9ca3af; font-size: 13px; margin: 0;">
+              Sent by Class Rep · 
+              <a href="#" style="color: #2e5a88; text-decoration: none;">Unsubscribe</a>
+            </p>
+          </div>
+        </div>
       </div>
     `,
     });
