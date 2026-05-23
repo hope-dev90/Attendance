@@ -1,7 +1,14 @@
+const fs = require('fs');
+const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 const transporter = require('../config/mailer');
+
+const LOGO_PATH = path.resolve(
+  __dirname,
+  '../../../attendance/attendance/src/assets/logo.jpg',
+);
 
 const generateTokens = (rep) => {
   const payload = {
@@ -58,17 +65,25 @@ const sendOTPEmail = async (email, fullName, otp) => {
       })
       .join('');
 
+    const hasLogo = fs.existsSync(LOGO_PATH);
+    const logoHtml = hasLogo
+      ? `<img src="cid:app-logo" alt="Attendance management" width="44" height="44" style="display:block;width:44px;height:44px;border-radius:10px;object-fit:contain;background-color:#ffffff;" />`
+      : `<span style="display:block;width:44px;height:44px;line-height:44px;text-align:center;font-size:18px;font-weight:700;color:#1a3b66;">A</span>`;
+
     await transporter.sendMail({
-      from: `Class Rep System <${process.env.EMAIL_USER}>`,
+      from: `Attendance management System <${process.env.EMAIL_USER}>`,
       to: email,
       subject: 'Your Verification Code',
+      attachments: hasLogo
+        ? [{ filename: 'logo.jpg', path: LOGO_PATH, cid: 'app-logo' }]
+        : [],
       html: `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Verify your Class Rep account</title>
+  <title>Verify your Attendance management account</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -148,19 +163,14 @@ const sendOTPEmail = async (email, fullName, otp) => {
             <table border="0" cellpadding="0" cellspacing="0" width="44" height="44"
               style="width:44px;height:44px;background-color:#ffffff;border-radius:10px;">
               <tr>
-                <td align="center" valign="middle" height="44" style="border-radius:10px;">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:block;">
-                    <rect x="3" y="3" width="8" height="8" rx="2" fill="#1a3b66"/>
-                    <rect x="13" y="3" width="8" height="8" rx="2" fill="#2d5b94"/>
-                    <rect x="3" y="13" width="8" height="8" rx="2" fill="#2d5b94"/>
-                    <rect x="13" y="13" width="8" height="8" rx="2" fill="#1a3b66"/>
-                  </svg>
+                <td align="center" valign="middle" height="44" style="border-radius:10px;padding:4px;">
+                  ${logoHtml}
                 </td>
               </tr>
             </table>
           </td>
           <td style="vertical-align: middle;">
-            <div class="logo-name">Class Rep</div>
+            <div class="logo-name">Attendance management</div>
             <div class="logo-sub">Student management system</div>
           </td>
         </tr>
@@ -184,7 +194,7 @@ const sendOTPEmail = async (email, fullName, otp) => {
       <h1>Verify your account</h1>
       <p class="intro">
         Hi <strong>${firstName}</strong>,<br>
-        Enter this verification code to complete your Class Rep signup. It expires in <strong>10 minutes</strong>.
+        Enter this verification code to complete your Attendance management signup. It expires in <strong>10 minutes</strong>.
       </p>
 
       <table border="0" cellpadding="0" cellspacing="0" width="100%"
@@ -235,7 +245,7 @@ ${otpDigitRow}
       </table>
 
       <div class="footer">
-        Sent by <span style="font-weight:700;color:#1a3b66;">Class Rep</span>
+        Sent by <span style="font-weight:700;color:#1a3b66;">Attendance management</span>
         &nbsp;&middot;&nbsp; Student management system
       </div>
 
