@@ -80,4 +80,6 @@ export const api = {
     body: JSON.stringify(payload),
   }),
   getLessonReports: () => apiRequest('/api/lesson-reports'),
+  getTimetable: () => apiRequest('/api/timetable'),
+  getTimetableByClass: (className) => apiRequest(`/api/timetable/class/${className}`),
 };

@@ -45,12 +45,10 @@ io.on('connection', (socket) => {
   });
 });
 
-
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(generalLimiter);
-
 
 app.use('/api/auth', require('./src/routes/auth'));
 app.use('/api/classes', require('./src/routes/classes'));
@@ -58,9 +56,9 @@ app.use('/api/students', require('./src/routes/students'));
 app.use('/api/attendance', require('./src/routes/attendance'));
 app.use('/api/reports', require('./src/routes/reports'));
 app.use('/api/lesson-reports', require('./src/routes/lessonReports'));
+app.use('/api/timetable', require('./src/routes/timetable'));
 app.use('/api/routes', require('./src/routes/devGuide'));
 app.use('/api/dev-guide', require('./src/routes/devGuide'));
-
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 

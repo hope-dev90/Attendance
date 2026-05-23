@@ -1,5 +1,6 @@
-
-require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
+require('dotenv').config({
+  path: require('path').resolve(__dirname, '../../.env'),
+});
 const pool = require('./db');
 
 const schema = `
@@ -90,9 +91,30 @@ const schema = `
     lessons JSONB NOT NULL,
     UNIQUE(class_id, report_date)
   );
+
+  CREATE TABLE IF NOT EXISTS timetable (
+    id SERIAL PRIMARY KEY,
+    day VARCHAR(20) NOT NULL,
+    time_slot VARCHAR(20) NOT NULL,
+    class_name VARCHAR(10) NOT NULL,
+    subject VARCHAR(100) NOT NULL,
+    teacher VARCHAR(100),
+    UNIQUE(day, time_slot, class_name)
+  );
 `;
 
-const classes = ['Y1A','Y1B','Y1C','Y2A','Y2B','Y2C','Y3A','Y3B','Y3C','Y3D'];
+const classes = [
+  'Y1A',
+  'Y1B',
+  'Y1C',
+  'Y2A',
+  'Y2B',
+  'Y2C',
+  'Y3A',
+  'Y3B',
+  'Y3C',
+  'Y3D',
+];
 
 (async () => {
   try {
@@ -102,7 +124,7 @@ const classes = ['Y1A','Y1B','Y1C','Y2A','Y2B','Y2C','Y3A','Y3B','Y3C','Y3D'];
     for (const name of classes) {
       await pool.query(
         'INSERT INTO classes (name) VALUES ($1) ON CONFLICT (name) DO NOTHING',
-        [name]
+        [name],
       );
     }
     console.log('Classes seeded:', classes.join(', '));

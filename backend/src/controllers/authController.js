@@ -37,84 +37,102 @@ const sendOTPEmail = async (email, fullName, otp) => {
     to: email,
     subject: 'Your Verification Code',
     html: `
-      <div style="font-family: 'DM Sans', sans-serif; max-width: 480px; margin: auto;">
-        <!-- Header -->
-        <div style="background-color: #1e3f63; padding: 24px 32px; border-radius: 20px 20px 0 0;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="background: white; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2e5a88" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7" rx="1"/>
-                <rect x="14" y="3" width="7" height="7" rx="1"/>
-                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                <rect x="14" y="14" width="7" height="7" rx="1"/>
-              </svg>
-            </div>
-            <div>
-              <div style="color: white; font-weight: 700; font-size: 18px;">Class Rep</div>
-              <div style="color: #a8c4e0; font-size: 12px;">Student management system</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Body -->
-        <div style="background: white; padding: 32px; border-radius: 0 0 20px 20px; border: 1px solid #dde3ed;">
-          <!-- Icon -->
-          <div style="display: flex; justify-content: center; margin-bottom: 24px;">
-            <div style="background: #f4f7fc; width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2e5a88" stroke-width="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <path d="m9 12 2 2 4-4"/>
-              </svg>
-            </div>
-          </div>
-          
-          <!-- Heading and Greeting -->
-          <h2 style="color: #001f3f; margin: 0 0 16px 0; text-align: center; font-size: 24px; font-weight: 700;">
-            Verify your account
-          </h2>
-          <p style="color: #4a5568; margin: 0 0 24px 0; text-align: center; line-height: 1.6;">
-            Hi <strong style="color: #2e5a88;">${fullName}</strong>,<br/>
-            Use the code below to verify your Class Rep account. It expires in <strong style="color: #2e5a88;">10 minutes</strong>.
-          </p>
-          
-          <!-- OTP Display -->
-          <div style="background: #f4f7fc; padding: 24px; border-radius: 16px; margin-bottom: 24px;">
-            <div style="text-align: center; color: #8898aa; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px;">
-              YOUR VERIFICATION CODE
-            </div>
-            <div style="display: flex; justify-content: center; gap: 8px;">
-              ${otpDigits.map(digit => `
-                <div style="width: 48px; height: 56px; background: white; border: 1.5px solid #2e5a88; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #001f3f;">
-                  ${digit}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-          
-          <!-- Info Notice -->
-          <div style="background: #eef5fe; border: 1px solid #c8daf5; border-radius: 12px; padding: 16px; display: flex; gap: 12px; margin-bottom: 32px;">
-            <div style="flex-shrink: 0;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e5a88" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="16" x2="12" y2="12"/>
-                <line x1="12" y1="8" x2="12.01" y2="8"/>
-              </svg>
-            </div>
-            <p style="color: #4a6a98; margin: 0; font-size: 14px; line-height: 1.5;">
-              If you didn't create this account, ignore this email.
-            </p>
-          </div>
-          
-          <!-- Footer -->
-          <div style="border-top: 1px solid #e5e7eb; padding-top: 24px; text-align: center;">
-            <p style="color: #9ca3af; font-size: 13px; margin: 0;">
-              Sent by Class Rep · 
-              <a href="#" style="color: #2e5a88; text-decoration: none;">Unsubscribe</a>
-            </p>
-          </div>
+     <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify your Class Rep account</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #e8edf4; font-family: 'DM Sans', sans-serif; padding: 40px 16px; }
+    .wrapper { max-width: 480px; margin: 0 auto; background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid #d5dce8; }
+    .header { background: #1e3f63; padding: 22px 28px; display: flex; align-items: center; gap: 14px; }
+    .logo-box { width: 42px; height: 42px; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo-name { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: 0.2px; }
+    .logo-sub { font-size: 12px; color: #8fb4d4; margin-top: 2px; }
+    .body { padding: 36px 32px; }
+    .icon-box { width: 52px; height: 52px; background: #e8f0fb; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+    h1 { font-size: 22px; font-weight: 800; color: #001f3f; margin-bottom: 12px; letter-spacing: -0.3px; }
+    .intro { font-size: 14px; color: #5a6a82; line-height: 1.7; margin-bottom: 28px; }
+    .intro strong { font-weight: 700; color: #1e3f63; }
+    .otp-box { background: #f2f6fc; border-radius: 16px; padding: 24px 20px; margin-bottom: 24px; border: 1px solid #dde6f0; text-align: center; }
+    .otp-label { font-size: 11px; font-weight: 700; color: #8a9ab5; letter-spacing: 1.8px; text-transform: uppercase; margin-bottom: 18px; }
+    .digits { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    .digit { width: 52px; height: 62px; background: #fff; border: 1.5px solid #2e5a88; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; color: #001f3f; }
+    .notice { background: #eef4fd; border-radius: 12px; padding: 14px 16px; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 28px; border: 1px solid #cddaf0; }
+    .notice svg { flex-shrink: 0; margin-top: 1px; }
+    .notice p { font-size: 13px; color: #4a6282; line-height: 1.6; }
+    .footer { border-top: 1px solid #e8edf4; padding-top: 20px; text-align: center; font-size: 12px; color: #9aa5b8; }
+    .footer a { color: #2e5a88; text-decoration: none; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+
+    <div class="header">
+      <div class="logo-box">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="8" height="8" rx="2" fill="#1e3f63"/>
+          <rect x="13" y="3" width="8" height="8" rx="2" fill="#2e5a88"/>
+          <rect x="3" y="13" width="8" height="8" rx="2" fill="#2e5a88"/>
+          <rect x="13" y="13" width="8" height="8" rx="2" fill="#1e3f63"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-name">Class Rep</div>
+        <div class="logo-sub">Student management system</div>
+      </div>
+    </div>
+
+    <div class="body">
+
+      <div class="icon-box">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2e5a88" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <polyline points="9 12 11 14 15 10"/>
+        </svg>
+      </div>
+
+      <h1>Verify your account</h1>
+
+      <p class="intro">
+        Hi <strong>{{name}}</strong>,<br>
+        Use the code below to verify your Class Rep account. It expires in <strong>{{expiry}} minutes</strong>.
+      </p>
+
+      <div class="otp-box">
+        <div class="otp-label">Your verification code</div>
+        <div class="digits">
+          <!-- Split {{code}} into individual digits in your backend -->
+          <div class="digit">{{d1}}</div>
+          <div class="digit">{{d2}}</div>
+          <div class="digit">{{d3}}</div>
+          <div class="digit">{{d4}}</div>
+          <div class="digit">{{d5}}</div>
+          <div class="digit">{{d6}}</div>
         </div>
       </div>
-    `,
+
+      <div class="notice">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e5a88" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p>If you didn't create this account, you can safely ignore this email. Your account remains secure.</p>
+      </div>
+
+      <div class="footer">
+        Sent by <strong style="color:#2e5a88;">Class Rep</strong> &nbsp;·&nbsp;
+        <a href="{{unsubscribe_url}}">Unsubscribe</a>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>`,
     });
 
     return { sent: true };
