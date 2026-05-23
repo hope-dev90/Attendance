@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { 
     ShieldCheck,
   Activity,
@@ -10,13 +10,16 @@ import {
   Briefcase, 
   X,
   Edit2,
-  Phone
+  Phone,
+  Camera
 } from 'lucide-react';
 import LogoImg from '../assets/logo.jpg';
 
 const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
   const [showProfile, setShowProfile] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [profilePic, setProfilePic] = useState(null);
+  const fileInputRef = useRef(null);
   const extractName = (email) => {
     if (!email) return "Staff Member";
     return email.split('@')[0]
@@ -28,6 +31,21 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
       .join(' ');
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target.result;
+        setProfilePic(base64);
+        if (isEditing) {
+          setEditForm(prev => ({ ...prev, profilePic: base64 }));
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const defaultProfile = {
     name: rep?.full_name || extractName(userEmail),
     email: userEmail || rep?.email || 'user@example.com',
@@ -35,7 +53,8 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
     position: 'Class representative',
     department: rep?.class_name || 'SPE',
     joinDate: 'January 15, 2024',
-    address: 'Kigali, Rwanda'
+    address: 'Kigali, Rwanda',
+    profilePic: null
   };
 
   const [savedProfile, setSavedProfile] = useState(null);
@@ -73,9 +92,17 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
         
         <div className="flex items-center gap-5">
           <button onClick={() => setShowProfile(true)} className="flex items-center gap-2 hover:bg-white/10 p-2 rounded-xl transition-all">
-            <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center border border-white/20 font-bold text-[#2e5a88]">
-              {profileData.name[0]}
-            </div>
+            {profilePic || profileData.profilePic ? (
+              <img 
+                src={profilePic || profileData.profilePic} 
+                alt="Profile" 
+                className="w-8 h-8 rounded-full object-cover border border-white/20" 
+              />
+            ) : (
+              <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center border border-white/20 font-bold text-[#2e5a88]">
+                {profileData.name[0]}
+              </div>
+            )}
             <span className="hidden sm:inline font-semibold text-sm text-gray-200">{profileData.name.split(' ')[0]}</span>
           </button>
     
@@ -145,12 +172,44 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
             </div>
             <div className="p-8">
               <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-[#2e5a88] rounded-full flex items-center justify-center text-white font-black text-3xl mx-auto mb-4 shadow-lg">
-                  {profileData.name[0]}
+                <div className="relative w-20 h-20 mx-auto mb-4">
+                  {profilePic || profileData.profilePic ? (
+                    <img 
+                      src={profilePic || profileData.profilePic} 
+                      alt="Profile" 
+                      className="w-20 h-20 rounded-full object-cover shadow-lg" 
+                    />
+                  ) : (
+                    <div className="w-20 h-20 bg-[#2e5a88] rounded-full flex items-center justify-center text-white font-black text-3xl shadow-lg">
+                      {profileData.name[0]}
+                    </div>
+                  )}
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute bottom-0 right-0 w-8 h-8 bg-[#2e5a88] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#1e3f63] transition-all"
+                  >
+                    <Camera size={16} />
+                  </button>
                 </div>
                 <h3 className="text-2xl font-black text-[#001f3f]">{profileData.name}</h3>
                 <p className="text-gray-500 font-semibold">{profileData.position}</p>
+                {isEditing && (
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-[#2e5a88] text-sm font-semibold mt-2 hover:underline"
+                  >
+                    Change photo
+                  </button>
+                )}
               </div>
+              
+              <input 
+                type="file" 
+                accept="image/*" 
+                ref={fileInputRef} 
+                onChange={handleFileChange}
+                className="hidden"
+              />
 
               {!isEditing ? (
                 <div className="space-y-4">
@@ -192,7 +251,11 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
                   </div>
 
                   <button 
-                    onClick={() => { setIsEditing(true); setEditForm(profileData); }} 
+                    onClick={() => { 
+                      setIsEditing(true); 
+                      setEditForm(profileData); 
+                      setProfilePic(profileData.profilePic); 
+                    }} 
                     className="w-full mt-6 flex items-center justify-center gap-2 bg-[#2e5a88] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#1e3f63] transition-all"
                   >
                     <Edit2 size={18} /> Edit Profile
@@ -251,7 +314,10 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
                       Cancel
                     </button>
                     <button 
-                      onClick={() => { setSavedProfile(editForm); setIsEditing(false); }} 
+                      onClick={() => { 
+                        setSavedProfile({ ...editForm, profilePic: profilePic || editForm.profilePic }); 
+                        setIsEditing(false); 
+                      }} 
                       className="flex-1 px-6 py-3 bg-[#2e5a88] text-white rounded-xl font-bold hover:bg-[#1e3f63] transition-all"
                     >
                       Save Changes
