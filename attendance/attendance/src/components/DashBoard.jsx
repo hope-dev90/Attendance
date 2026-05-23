@@ -14,11 +14,12 @@ import {
   Camera
 } from 'lucide-react';
 import LogoImg from '../assets/logo.jpg';
+import { api } from '../api';
 
 const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
   const [showProfile, setShowProfile] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [profilePic, setProfilePic] = useState(null);
+  const [profilePic, setProfilePic] = useState(rep?.profile_pic || null);
   const fileInputRef = useRef(null);
   const extractName = (email) => {
     if (!email) return "Staff Member";
@@ -57,7 +58,7 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
     department: rep?.class_name || 'SPE',
     joinDate: 'January 15, 2024',
     address: 'Kigali, Rwanda',
-    profilePic: null
+    profilePic: rep?.profile_pic || null
   };
 
   const [savedProfile, setSavedProfile] = useState(null);
@@ -318,12 +319,22 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
                       Cancel
                     </button>
                     <button 
-                      onClick={() => { 
+                      onClick={async () => { 
                         const newProfile = { ...editForm, profilePic: profilePic || editForm.profilePic };
                         console.log("Saving profile:", newProfile);
-                        setSavedProfile(newProfile); 
-                        setProfilePic(newProfile.profilePic);
-                        setIsEditing(false); 
+                        try {
+                          await api.updateProfile({ 
+                            full_name: newProfile.name, 
+                            email: newProfile.email,
+                            profilePic: newProfile.profilePic 
+                          });
+                          setSavedProfile(newProfile); 
+                          setProfilePic(newProfile.profilePic);
+                          setIsEditing(false); 
+                        } catch (error) {
+                          console.error("Failed to update profile:", error);
+                          alert("Failed to update profile: " + (error.message || "Unknown error"));
+                        }
                       }} 
                       className="flex-1 px-6 py-3 bg-[#2e5a88] text-white rounded-xl font-bold hover:bg-[#1e3f63] transition-all"
                     >

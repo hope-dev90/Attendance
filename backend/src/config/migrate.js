@@ -29,6 +29,7 @@ const schema = `
     is_verified BOOLEAN DEFAULT FALSE,
     otp_code VARCHAR(6),
     otp_expires_at TIMESTAMPTZ,
+    profile_pic TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
   );
 
@@ -36,6 +37,7 @@ const schema = `
   ALTER TABLE reps ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE;
   ALTER TABLE reps ADD COLUMN IF NOT EXISTS otp_code VARCHAR(6);
   ALTER TABLE reps ADD COLUMN IF NOT EXISTS otp_expires_at TIMESTAMPTZ;
+  ALTER TABLE reps ADD COLUMN IF NOT EXISTS profile_pic TEXT;
 
   CREATE TABLE IF NOT EXISTS attendance_sessions (
     id SERIAL PRIMARY KEY,

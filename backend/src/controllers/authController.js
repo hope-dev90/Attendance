@@ -4,7 +4,12 @@ const pool = require('../config/db');
 const transporter = require('../config/mailer');
 
 const generateTokens = (rep) => {
-  const payload = { id: rep.id, email: rep.email, classId: rep.class_id, class_id: rep.class_id };
+  const payload = {
+    id: rep.id,
+    email: rep.email,
+    classId: rep.class_id,
+    class_id: rep.class_id,
+  };
 
   const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || '155m',
@@ -17,7 +22,8 @@ const generateTokens = (rep) => {
   return { accessToken, refreshToken };
 };
 
-const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+const generateOTP = () =>
+  Math.floor(100000 + Math.random() * 900000).toString();
 
 const sendOTPEmail = async (email, fullName, otp) => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
@@ -26,10 +32,10 @@ const sendOTPEmail = async (email, fullName, otp) => {
 
   try {
     await transporter.sendMail({
-    from: `Class Rep System <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: 'Your Verification Code',
-    html: `
+      from: `Class Rep System <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Your Verification Code',
+      html: `
       <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:2rem;border:1px solid #e2e8f0;border-radius:8px;">
         <h2 style="color:#2563eb;">Verify your account</h2>
         <p>Hi <strong>${fullName}</strong>,</p>
@@ -49,7 +55,13 @@ const sendOTPEmail = async (email, fullName, otp) => {
   }
 };
 
-const buildOtpResponse = ({ message, email, otp, mailStatus, statusCode = 200 }) => {
+const buildOtpResponse = ({
+  message,
+  email,
+  otp,
+  mailStatus,
+  statusCode = 200,
+}) => {
   const isProduction = process.env.NODE_ENV === 'production';
   const response = {
     message: mailStatus.sent
@@ -74,11 +86,16 @@ const signup = async (req, res) => {
   }
 
   if (password.length < 8) {
-    return res.status(400).json({ message: 'Password must be at least 8 characters.' });
+    return res
+      .status(400)
+      .json({ message: 'Password must be at least 8 characters.' });
   }
 
   try {
-    const existing = await pool.query('SELECT id, is_verified FROM reps WHERE email = $1', [email]);
+    const existing = await pool.query(
+      'SELECT id, is_verified FROM reps WHERE email = $1',
+      [email],
+    );
     if (existing.rows.length > 0) {
       if (existing.rows[0].is_verified) {
         return res.status(409).json({ message: 'Email already registered.' });
@@ -88,9 +105,13 @@ const signup = async (req, res) => {
       const expires = new Date(Date.now() + 10 * 60 * 1000);
       await pool.query(
         'UPDATE reps SET otp_code = $1, otp_expires_at = $2 WHERE email = $3',
-        [otp, expires, email]
+        [otp, expires, email],
       );
-      const mailStatus = await sendOTPEmail(email, existing.rows[0].full_name || full_name, otp);
+      const mailStatus = await sendOTPEmail(
+        email,
+        existing.rows[0].full_name || full_name,
+        otp,
+      );
       const { statusCode, response } = buildOtpResponse({
         message: 'OTP resent. Please verify your email.',
         email,
@@ -100,17 +121,22 @@ const signup = async (req, res) => {
       return res.status(statusCode).json(response);
     }
 
-    const classCheck = await pool.query('SELECT id FROM classes WHERE id = $1', [class_id]);
+    const classCheck = await pool.query(
+      'SELECT id FROM classes WHERE id = $1',
+      [class_id],
+    );
     if (classCheck.rows.length === 0) {
       return res.status(404).json({ message: 'Class not found.' });
     }
 
     const repCheck = await pool.query(
       'SELECT id FROM reps WHERE class_id = $1 AND is_verified = TRUE',
-      [class_id]
+      [class_id],
     );
     if (repCheck.rows.length > 0) {
-      return res.status(409).json({ message: 'This class already has a representative.' });
+      return res
+        .status(409)
+        .json({ message: 'This class already has a representative.' });
     }
 
     const password_hash = await bcrypt.hash(password, 12);
@@ -120,7 +146,7 @@ const signup = async (req, res) => {
     await pool.query(
       `INSERT INTO reps (full_name, email, password_hash, class_id, otp_code, otp_expires_at, is_verified, is_active)
        VALUES ($1, $2, $3, $4, $5, $6, FALSE, FALSE)`,
-      [full_name, email, password_hash, class_id, otp, expires]
+      [full_name, email, password_hash, class_id, otp, expires],
     );
 
     const mailStatus = await sendOTPEmail(email, full_name, otp);
@@ -147,10 +173,9 @@ const verifyOTP = async (req, res) => {
   }
 
   try {
-    const result = await pool.query(
-      'SELECT * FROM reps WHERE email = $1',
-      [email]
-    );
+    const result = await pool.query('SELECT * FROM reps WHERE email = $1', [
+      email,
+    ]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Account not found.' });
@@ -167,22 +192,34 @@ const verifyOTP = async (req, res) => {
     }
 
     if (new Date() > new Date(rep.otp_expires_at)) {
-      return res.status(400).json({ message: 'Verification code has expired. Please sign up again.' });
+      return res
+        .status(400)
+        .json({
+          message: 'Verification code has expired. Please sign up again.',
+        });
     }
 
     await pool.query(
       'UPDATE reps SET is_verified = TRUE, is_active = TRUE, otp_code = NULL, otp_expires_at = NULL WHERE id = $1',
-      [rep.id]
+      [rep.id],
     );
 
     const { accessToken, refreshToken } = generateTokens(rep);
-    await pool.query('UPDATE reps SET refresh_token = $1 WHERE id = $2', [refreshToken, rep.id]);
+    await pool.query('UPDATE reps SET refresh_token = $1 WHERE id = $2', [
+      refreshToken,
+      rep.id,
+    ]);
 
     return res.json({
       message: 'Email verified successfully.',
       accessToken,
       refreshToken,
-      rep: { id: rep.id, full_name: rep.full_name, email: rep.email, class_id: rep.class_id },
+      rep: {
+        id: rep.id,
+        full_name: rep.full_name,
+        email: rep.email,
+        class_id: rep.class_id,
+      },
     });
   } catch (err) {
     console.error('Verify OTP error:', err.message);
@@ -195,18 +232,22 @@ const resendOTP = async (req, res) => {
   if (!email) return res.status(400).json({ message: 'Email required.' });
 
   try {
-    const result = await pool.query('SELECT * FROM reps WHERE email = $1', [email]);
-    if (result.rows.length === 0) return res.status(404).json({ message: 'Account not found.' });
+    const result = await pool.query('SELECT * FROM reps WHERE email = $1', [
+      email,
+    ]);
+    if (result.rows.length === 0)
+      return res.status(404).json({ message: 'Account not found.' });
 
     const rep = result.rows[0];
-    if (rep.is_verified) return res.status(400).json({ message: 'Account already verified.' });
+    if (rep.is_verified)
+      return res.status(400).json({ message: 'Account already verified.' });
 
     const otp = generateOTP();
     const expires = new Date(Date.now() + 10 * 60 * 1000);
 
     await pool.query(
       'UPDATE reps SET otp_code = $1, otp_expires_at = $2 WHERE id = $3',
-      [otp, expires, rep.id]
+      [otp, expires, rep.id],
     );
 
     const mailStatus = await sendOTPEmail(email, rep.full_name, otp);
@@ -227,19 +268,22 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required.' });
+    return res
+      .status(400)
+      .json({ message: 'Email and password are required.' });
   }
 
   try {
     const result = await pool.query(
       'SELECT * FROM reps WHERE email = $1 AND is_verified = TRUE',
-      [email]
+      [email],
     );
 
     if (result.rows.length === 0) {
       // Check if account exists but unverified
       const unverified = await pool.query(
-        'SELECT email FROM reps WHERE email = $1', [email]
+        'SELECT email FROM reps WHERE email = $1',
+        [email],
       );
       if (unverified.rows.length > 0) {
         return res.status(403).json({
@@ -258,29 +302,40 @@ const login = async (req, res) => {
     }
 
     const { accessToken, refreshToken } = generateTokens(rep);
-    await pool.query('UPDATE reps SET refresh_token = $1 WHERE id = $2', [refreshToken, rep.id]);
+    await pool.query('UPDATE reps SET refresh_token = $1 WHERE id = $2', [
+      refreshToken,
+      rep.id,
+    ]);
 
     return res.json({
       accessToken,
       refreshToken,
-      rep: { id: rep.id, full_name: rep.full_name, email: rep.email, class_id: rep.class_id },
+      rep: {
+        id: rep.id,
+        full_name: rep.full_name,
+        email: rep.email,
+        class_id: rep.class_id,
+      },
     });
   } catch (err) {
     console.error('Login error:', err);
-    return res.status(500).json({ message: 'Server error.', detail: err.message });
+    return res
+      .status(500)
+      .json({ message: 'Server error.', detail: err.message });
   }
 };
 
 const refresh = async (req, res) => {
   const { refreshToken } = req.body;
-  if (!refreshToken) return res.status(400).json({ message: 'Refresh token required.' });
+  if (!refreshToken)
+    return res.status(400).json({ message: 'Refresh token required.' });
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
     const result = await pool.query(
       'SELECT * FROM reps WHERE id = $1 AND refresh_token = $2 AND is_active = TRUE',
-      [decoded.id, refreshToken]
+      [decoded.id, refreshToken],
     );
 
     if (result.rows.length === 0) {
@@ -290,17 +345,24 @@ const refresh = async (req, res) => {
     const rep = result.rows[0];
     const tokens = generateTokens(rep);
 
-    await pool.query('UPDATE reps SET refresh_token = $1 WHERE id = $2', [tokens.refreshToken, rep.id]);
+    await pool.query('UPDATE reps SET refresh_token = $1 WHERE id = $2', [
+      tokens.refreshToken,
+      rep.id,
+    ]);
 
     return res.json(tokens);
   } catch (err) {
-    return res.status(401).json({ message: 'Invalid or expired refresh token.' });
+    return res
+      .status(401)
+      .json({ message: 'Invalid or expired refresh token.' });
   }
 };
 
 const logout = async (req, res) => {
   try {
-    await pool.query('UPDATE reps SET refresh_token = NULL WHERE id = $1', [req.rep.id]);
+    await pool.query('UPDATE reps SET refresh_token = NULL WHERE id = $1', [
+      req.rep.id,
+    ]);
     return res.json({ message: 'Logged out.' });
   } catch (err) {
     return res.status(500).json({ message: 'Server error.' });
@@ -310,17 +372,63 @@ const logout = async (req, res) => {
 const me = async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT r.id, r.full_name, r.email, r.class_id, c.name AS class_name
+      `SELECT r.id, r.full_name, r.email, r.class_id, r.profile_pic, c.name AS class_name
        FROM reps r
        LEFT JOIN classes c ON c.id = r.class_id
        WHERE r.id = $1`,
-      [req.rep.id]
+      [req.rep.id],
     );
-    if (result.rows.length === 0) return res.status(404).json({ message: 'Rep not found.' });
+    if (result.rows.length === 0)
+      return res.status(404).json({ message: 'Rep not found.' });
     return res.json(result.rows[0]);
   } catch (err) {
     return res.status(500).json({ message: 'Server error.' });
   }
 };
 
-module.exports = { signup, verifyOTP, resendOTP, login, refresh, logout, me };
+const updateProfile = async (req, res) => {
+  try {
+    const {
+      full_name,
+      email,
+      phone,
+      position,
+      department,
+      address,
+      profilePic,
+    } = req.body;
+
+    const result = await pool.query(
+      `UPDATE reps 
+       SET full_name = COALESCE($1, full_name),
+           email = COALESCE($2, email),
+           profile_pic = COALESCE($3, profile_pic)
+       WHERE id = $4
+       RETURNING id, full_name, email, class_id, profile_pic`,
+      [full_name, email, profilePic, req.rep.id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Rep not found.' });
+    }
+
+    return res.json({
+      message: 'Profile updated successfully.',
+      rep: result.rows[0],
+    });
+  } catch (err) {
+    console.error('Update profile error:', err.message);
+    return res.status(500).json({ message: 'Server error.' });
+  }
+};
+
+module.exports = {
+  signup,
+  verifyOTP,
+  resendOTP,
+  login,
+  refresh,
+  logout,
+  me,
+  updateProfile,
+};

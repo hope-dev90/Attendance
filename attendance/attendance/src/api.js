@@ -64,6 +64,10 @@ export const api = {
   }),
   logout: () => apiRequest('/api/auth/logout', { method: 'POST' }),
   me: () => apiRequest('/api/auth/me'),
+  updateProfile: (payload) => apiRequest('/api/auth/profile', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  }),
   getClasses: () => apiRequest('/api/classes'),
   getMyStudents: () => apiRequest('/api/students/my-class'),
   getAttendanceHistory: () => apiRequest('/api/attendance/history'),
