@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Environment — keep .env.example, ignore the real one
+.env
+.env.local
+
+# Generated reports (PDFs/CSVs)
+reports/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
