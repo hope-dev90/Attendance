@@ -82,6 +82,7 @@ const Sidebar = ({ activePage, onNavigate, onBack, onLogout, mobileOpen, onMobil
         <div>
           <h1>StaffNet</h1>
           <p>Attendance Section</p>
+          <p>Beyond 8:30 a.m submission will be delayed</p>
         </div>
         <button onClick={onMobileClose} style={{ marginLeft:"auto", background:"none", border:"none", color:"#94a3b8", cursor:"pointer", display:"none" }} className="sn-sa-close"><X size={18} /></button>
       </div>
@@ -141,7 +142,7 @@ const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
     setHistoryLoading(true);
     api.getAttendanceHistory()
       .then((data) => {
-        // Shape matches AttendanceHistory.jsx: session_id, session_date, present_count, late_count, absent_count, is_delayed, report_id
+        
         setHistory(data);
       })
       .catch((err) => setApiError(err.message))
