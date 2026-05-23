@@ -1,0 +1,599 @@
+[{
+  "day": "Monday",
+  "schedule": {
+    "08:30-09:20": {
+      "Y1A": {"subject": "JavaScript", "teacher": "Stanley"},
+      "Y1B": {"subject": "FoP", "teacher": "Hilaire"},
+      "Y1C": {"subject": "English", "teacher": "Alphonse"},
+
+      "Y2A": {"subject": "Web3", "teacher": "Dr AWET"},
+      "Y2B": {"subject": "Advanced Networking", "teacher": "Celestin"},
+      "Y2C": {"subject": "ML with Python", "teacher": "Mukama"},
+
+      "Y3A": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y3B": {"subject": "Math", "teacher": "Bosco"},
+      "Y3C": {"subject": "Physics", "teacher": "Projecte"},
+      "Y3D": {"subject": "Physics", "teacher": "JDD"}
+    },
+
+    "09:20-10:10": {
+      "Y1A": {"subject": "JavaScript", "teacher": "Stanley"},
+      "Y1B": {"subject": "FoP", "teacher": "Hilaire"},
+      "Y1C": {"subject": "English", "teacher": "Alphonse"},
+
+      "Y2A": {"subject": "Web3", "teacher": "Dr AWET"},
+      "Y2B": {"subject": "Advanced Networking", "teacher": "Celestin"},
+      "Y2C": {"subject": "ML with Python", "teacher": "Mukama"},
+
+      "Y3A": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y3B": {"subject": "Math", "teacher": "Bosco"},
+      "Y3C": {"subject": "Physics", "teacher": "Projecte"},
+      "Y3D": {"subject": "Physics", "teacher": "JDD"}
+    },
+
+    "10:30-11:20": {
+      "Y1A": {"subject": "JavaScript", "teacher": "Stanley"},
+      "Y1B": {"subject": "FoP", "teacher": "Hilaire"},
+      "Y1C": {"subject": "Physics", "teacher": "Projecte"},
+
+      "Y2A": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y2B": {"subject": "3D Models", "teacher": "Rwagaju"},
+      "Y2C": {"subject": "Physics", "teacher": "JDD"},
+
+      "Y3A": {"subject": "English", "teacher": "Alphonse"},
+      "Y3B": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3C": {"subject": "Math", "teacher": "Bosco"},
+      "Y3D": {"subject": "English", "teacher": "Alphonse"}
+    },
+
+    "11:20-12:10": {
+      "Y1A": {"subject": "FoP", "teacher": "Hilaire"},
+      "Y1B": {"subject": "JavaScript", "teacher": "Stanley"},
+      "Y1C": {"subject": "Physics", "teacher": "Projecte"},
+
+      "Y2A": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y2B": {"subject": "3D Models", "teacher": "Rwagaju"},
+      "Y2C": {"subject": "Physics", "teacher": "JDD"},
+
+      "Y3A": {"subject": "English", "teacher": "Alphonse"},
+      "Y3B": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3C": {"subject": "Cyber Security", "teacher": "Celestin"},
+      "Y3D": {"subject": "English", "teacher": "Alphonse"}
+    },
+
+    "13:30-14:20": {
+      "Y1A": {"subject": "FoP", "teacher": "Hilaire"},
+      "Y1B": {"subject": "JavaScript", "teacher": "Stanley"},
+      "Y1C": {"subject": "Math", "teacher": "Emmanuel"},
+
+      "Y2A": {"subject": "3D Models", "teacher": "Rwagaju"},
+      "Y2B": {"subject": "Web3", "teacher": "Dr AWET"},
+      "Y2C": {"subject": "English", "teacher": "Alphonse"},
+
+      "Y3A": {"subject": "Physics", "teacher": "Projecte"},
+      "Y3B": {"subject": "Physics", "teacher": "JDD"},
+      "Y3C": {"subject": "Cyber Security", "teacher": "Celestin"},
+      "Y3D": {"subject": "Physics", "teacher": "JDD"}
+    },
+
+    "14:20-15:10": {
+      "Y1A": {"subject": "FoP", "teacher": "Hilaire"},
+      "Y1B": {"subject": "JavaScript", "teacher": "Stanley"},
+      "Y1C": {"subject": "Math", "teacher": "Emmanuel"},
+
+      "Y2A": {"subject": "3D Models", "teacher": "Rwagaju"},
+      "Y2B": {"subject": "Web3", "teacher": "Dr AWET"},
+      "Y2C": {"subject": "English", "teacher": "Alphonse"},
+
+      "Y3A": {"subject": "Physics", "teacher": "Projecte"},
+      "Y3B": {"subject": "Physics", "teacher": "JDD"},
+      "Y3C": {"subject": "Math", "teacher": "Bosco"},
+      "Y3D": {"subject": "Math", "teacher": "Bosco"}
+    },
+
+    "15:20-16:10": {
+      "Y1A": {"subject": "Physics", "teacher": "JDD"},
+      "Y1B": {"subject": "JavaScript", "teacher": "Stanley"},
+      "Y1C": {"subject": "Physics", "teacher": "Projecte"},
+
+      "Y2A": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y2B": {"subject": "3D Models", "teacher": "Rwagaju"},
+      "Y2C": {"subject": "Cyber Security", "teacher": "Celestin"},
+
+      "Y3A": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3B": {"subject": "Math", "teacher": "Bosco"},
+      "Y3C": {"subject": "Math", "teacher": "Bosco"},
+      "Y3D": {"subject": "Math", "teacher": "Bosco"}
+    },
+
+    "16:10-17:00": {
+      "Y1A": {"subject": "Physics", "teacher": "JDD"},
+      "Y1B": {"subject": "JavaScript", "teacher": "Stanley"},
+      "Y1C": {"subject": "Physics", "teacher": "Projecte"},
+
+      "Y2A": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y2B": {"subject": "3D Models", "teacher": "Rwagaju"},
+      "Y2C": {"subject": "Cyber Security", "teacher": "Celestin"},
+
+      "Y3A": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3B": {"subject": "Math", "teacher": "Bosco"},
+      "Y3C": {"subject": "Math", "teacher": "Bosco"},
+      "Y3D": {"subject": "Math", "teacher": "Bosco"}
+    }
+  }
+},
+{
+  "day": "Tuesday",
+  "schedule": {
+
+    "08:30-09:20": {
+      "Y1A": {"subject": "Networking", "teacher": "Olivier"},
+      "Y1B": {"subject": "Physics", "teacher": "JDD"},
+      "Y1C": {"subject": "Physics", "teacher": "Projecte"},
+
+      "Y2A": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y2B": {"subject": "DSA", "teacher": "Hilaire"},
+      "Y2C": {"subject": "Java", "teacher": "Damas"},
+
+      "Y3A": {"subject": "IT Projects", "teacher": "Rwagaju"},
+      "Y3B": {"subject": "English", "teacher": "Alphonse"},
+      "Y3C": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3D": {"subject": "Math", "teacher": "Bosco"}
+    },
+
+    "09:20-10:10": {
+      "Y1A": {"subject": "Networking", "teacher": "Olivier"},
+      "Y1B": {"subject": "Physics", "teacher": "JDD"},
+      "Y1C": {"subject": "Physics", "teacher": "Projecte"},
+
+      "Y2A": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y2B": {"subject": "DSA", "teacher": "Hilaire"},
+      "Y2C": {"subject": "Java", "teacher": "Damas"},
+
+      "Y3A": {"subject": "IT Projects", "teacher": "Rwagaju"},
+      "Y3B": {"subject": "English", "teacher": "Alphonse"},
+      "Y3C": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3D": {"subject": "Math", "teacher": "Bosco"}
+    },
+
+    "10:30-11:20": {
+      "Y1A": {"subject": "Physics", "teacher": "JDD"},
+      "Y1B": {"subject": "Networking", "teacher": "Olivier"},
+      "Y1C": {"subject": "English", "teacher": "Alphonse"},
+
+      "Y2A": {"subject": "Physics", "teacher": "Projecte"},
+      "Y2B": {"subject": "DSA", "teacher": "Hilaire"},
+      "Y2C": {"subject": "Math", "teacher": "Bosco"},
+
+      "Y3A": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y3B": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3C": {"subject": "IT Projects", "teacher": "Rwagaju"},
+      "Y3D": {"subject": "English", "teacher": "Egide"}
+    },
+
+    "11:20-12:10": {
+      "Y1A": {"subject": "Physics", "teacher": "JDD"},
+      "Y1B": {"subject": "Networking", "teacher": "Olivier"},
+      "Y1C": {"subject": "English", "teacher": "Alphonse"},
+
+      "Y2A": {"subject": "Physics", "teacher": "Projecte"},
+      "Y2B": {"subject": "Math", "teacher": "Bosco"},
+      "Y2C": {"subject": "Math", "teacher": "Emmanuel"},
+
+      "Y3A": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3B": {"subject": "IT Projects", "teacher": "Rwagaju"},
+      "Y3C": {"subject": "English", "teacher": "Egide"},
+      "Y3D": {"subject": "English", "teacher": "Egide"}
+    },
+
+    "13:30-14:20": {
+      "Y1A": {"subject": "FoP", "teacher": "Hilaire"},
+      "Y1B": {"subject": "WUI", "teacher": "Damas"},
+      "Y1C": {"subject": "Networking", "teacher": "Olivier"},
+
+      "Y2A": {"subject": "SE", "teacher": "Dr AWET"},
+      "Y2B": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y2C": {"subject": "English", "teacher": "Alphonse"},
+
+      "Y3A": {"subject": "IT Projects", "teacher": "Rwagaju"},
+      "Y3B": {"subject": "English", "teacher": "Egide"},
+      "Y3C": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3D": {"subject": "ML with Python", "teacher": "Mukama"}
+    },
+
+    "14:20-15:10": {
+      "Y1A": {"subject": "FoP", "teacher": "Hilaire"},
+      "Y1B": {"subject": "WUI", "teacher": "Damas"},
+      "Y1C": {"subject": "Networking", "teacher": "Olivier"},
+
+      "Y2A": {"subject": "SE", "teacher": "Dr AWET"},
+      "Y2B": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y2C": {"subject": "English", "teacher": "Alphonse"},
+
+      "Y3A": {"subject": "Cyber Security", "teacher": "Celestin"},
+      "Y3B": {"subject": "IT Projects", "teacher": "Rwagaju"},
+      "Y3C": {"subject": "English", "teacher": "Egide"},
+      "Y3D": {"subject": "ML with Python", "teacher": "Mukama"}
+    },
+
+    "15:20-16:10": {
+      "Y1A": {"subject": "WUI", "teacher": "Damas"},
+      "Y1B": {"subject": "Databases", "teacher": "Dr AWET"},
+      "Y1C": {"subject": "GUI", "teacher": "Stanley"},
+
+      "Y2A": {"subject": "English", "teacher": "Egide"},
+      "Y2B": {"subject": "English", "teacher": "Alphonse"},
+      "Y2C": {"subject": "Physics", "teacher": "JDD"},
+
+      "Y3A": {"subject": "Cyber Security", "teacher": "Celestin"},
+      "Y3B": {"subject": "Physics", "teacher": "Projecte"},
+      "Y3C": {"subject": "Math", "teacher": "Bosco"},
+      "Y3D": {"subject": "IT Projects", "teacher": "Rwagaju"}
+    },
+
+    "16:10-17:00": {
+      "Y1A": {"subject": "WUI", "teacher": "Damas"},
+      "Y1B": {"subject": "Databases", "teacher": "Dr AWET"},
+      "Y1C": {"subject": "GUI", "teacher": "Stanley"},
+
+      "Y2A": {"subject": "English", "teacher": "Egide"},
+      "Y2B": {"subject": "English", "teacher": "Alphonse"},
+      "Y2C": {"subject": "Physics", "teacher": "JDD"},
+
+      "Y3A": {"subject": "Cyber Security", "teacher": "Celestin"},
+      "Y3B": {"subject": "Physics", "teacher": "Projecte"},
+      "Y3C": {"subject": "Math", "teacher": "Bosco"},
+      "Y3D": {"subject": "IT Projects", "teacher": "Rwagaju"}
+    }
+
+  }
+},
+{
+  "day": "Wednesday",
+  "schedule": {
+
+    "08:30-09:20": {
+      "Y1A": {"subject": "PHP", "teacher": "Olivier"},
+      "Y1B": {"subject": "Math", "teacher": "Bosco"},
+      "Y1C": {"subject": "FoP", "teacher": "Rwagaju"},
+
+      "Y2A": {"subject": "Embedded Systems", "teacher": "Gabriel"},
+      "Y2B": {"subject": "DSA", "teacher": "Hilaire"},
+      "Y2C": {"subject": "DSA", "teacher": "Damascene"},
+
+      "Y3A": {"subject": "Physics", "teacher": "Projecte"},
+      "Y3B": {"subject": "Cyber Security", "teacher": "Celestin"},
+      "Y3C": {"subject": "Physics", "teacher": "JDD"},
+      "Y3D": null
+    },
+
+    "09:20-10:10": {
+      "Y1A": {"subject": "PHP", "teacher": "Olivier"},
+      "Y1B": {"subject": "Math", "teacher": "Bosco"},
+      "Y1C": {"subject": "FoP", "teacher": "Rwagaju"},
+
+      "Y2A": {"subject": "Embedded Systems", "teacher": "Gabriel"},
+      "Y2B": {"subject": "DSA", "teacher": "Hilaire"},
+      "Y2C": {"subject": "DSA", "teacher": "Damascene"},
+
+      "Y3A": {"subject": "Physics", "teacher": "Projecte"},
+      "Y3B": {"subject": "Cyber Security", "teacher": "Celestin"},
+      "Y3C": {"subject": "Physics", "teacher": "JDD"},
+      "Y3D": null
+    },
+
+    "10:30-11:20": {
+      "Y1A": {"subject": "Math", "teacher": "Bosco"},
+      "Y1B": {"subject": "FoP", "teacher": "Hilaire"},
+      "Y1C": {"subject": "FoP", "teacher": "Rwagaju"},
+
+      "Y2A": {"subject": "Embedded Systems", "teacher": "Gabriel"},
+      "Y2B": {"subject": "Advanced Networking", "teacher": "Celestin"},
+      "Y2C": {"subject": "DSA", "teacher": "Damascene"},
+
+      "Y3A": {"subject": "Physics", "teacher": "Projecte"},
+      "Y3B": {"subject": "English", "teacher": "Alphonse"},
+      "Y3C": {"subject": "English", "teacher": "Egide"},
+      "Y3D": {"subject": "Physics", "teacher": "JDD"}
+    },
+
+    "11:20-12:10": {
+      "Y1A": {"subject": "Math", "teacher": "Bosco"},
+      "Y1B": {"subject": "FoP", "teacher": "Hilaire"},
+      "Y1C": {"subject": "JavaScript", "teacher": "Stanley"},
+
+      "Y2A": {"subject": "DSA", "teacher": "Damascene"},
+      "Y2B": {"subject": "Embedded Systems", "teacher": "Gabriel"},
+      "Y2C": {"subject": "Advanced Networking", "teacher": "Celestin"},
+
+      "Y3A": {"subject": "English", "teacher": "Alphonse"},
+      "Y3B": {"subject": "English", "teacher": "Egide"},
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "13:30-14:20": {
+      "Y1A": null,
+      "Y1B": null,
+      "Y1C": null, 
+
+      "Y2A":  {"subject": "DSA", "teacher": "Damascene"},
+      "Y2B": {"subject": "Embedded Systems", "teacher": "Gabriel"},
+      "Y2C": {"subject": "Web3", "teacher": "Dr AWET"},
+
+      "Y3A": null,
+      "Y3B": null,
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "14:20-15:10": {
+      "Y1A": null,
+      "Y1B": null,
+      "Y1C": null, 
+
+      "Y2A":  {"subject": "DSA", "teacher": "Damascene"},
+      "Y2B": {"subject": "Embedded Systems", "teacher": "Gabriel"},
+      "Y2C": {"subject": "Web3", "teacher": "Dr AWET"},
+
+      "Y3A": null,
+      "Y3B": null,
+      "Y3C": null,
+      "Y3D": null
+    }
+    
+  }
+},
+{
+  "day": "Thursday",
+  "schedule": {
+
+    "08:30-09:20": {
+      "Y1A": {"subject": "Math", "teacher": "Bosco"},
+      "Y1B": {"subject": "GUI", "teacher": "Stanley"},
+      "Y1C": {"subject": "FoP", "teacher": "Rwagaju"},
+
+      "Y2A": {"subject": "Adv DB", "teacher": "Olivier"},
+      "Y2B": {"subject": "Java", "teacher": "Larissa"},
+      "Y2C": {"subject": "Java", "teacher": "Damas"},
+
+      "Y3A": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3B": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y3C": {"subject": "Intelligent Robotics", "teacher": "Gabriel"},
+      "Y3D": {"subject": "Cyber Security", "teacher": "Celestin"}
+    },
+
+    "09:20-10:10": {
+      "Y1A": {"subject": "Math", "teacher": "Bosco"},
+      "Y1B": {"subject": "GUI", "teacher": "Stanley"},
+      "Y1C": {"subject": "FoP", "teacher": "Rwagaju"},
+
+      "Y2A": {"subject": "Adv DB", "teacher": "Olivier"},
+      "Y2B": {"subject": "Java", "teacher": "Larissa"},
+      "Y2C": {"subject": "Java", "teacher": "Damas"},
+
+      "Y3A": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3B": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y3C": {"subject": "Intelligent Robotics", "teacher": "Gabriel"},
+      "Y3D": {"subject": "Cyber Security", "teacher": "Celestin"}
+    },
+
+    "10:30-11:20": {
+      "Y1A": {"subject": "Math", "teacher": "Bosco"},
+      "Y1B": {"subject": "Databases", "teacher": "Hilaire"},
+      "Y1C": {"subject": "Java", "teacher": "Larissa"},
+
+      "Y2A": {"subject": "Adv Networking", "teacher": "Celestin"},
+      "Y2B": {"subject": "Java", "teacher": "Damas"},
+      "Y2C": {"subject": "English", "teacher": "Alphonse"},
+
+      "Y3A": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y3B": {"subject": "Intelligent Robotics", "teacher": "Gabriel"},
+      "Y3C": {"subject": "English", "teacher": "Egide"},
+      "Y3D": null
+    },
+
+    "11:20-12:10": {
+      "Y1A": {"subject": "Math", "teacher": "Bosco"},
+      "Y1B": {"subject": "Databases", "teacher": "Hilaire"},
+      "Y1C": {"subject": "Java", "teacher": "Larissa"},
+
+      "Y2A": {"subject": "Adv Networking", "teacher": "Celestin"},
+      "Y2B": {"subject": "Embedded Systems", "teacher": "Gabriel"},
+      "Y2C": {"subject": "English", "teacher": "Alphonse"},
+
+      "Y3A": {"subject": "Physics Projecte", "teacher": "—"},
+      "Y3B": {"subject": "English", "teacher": "Egide"},
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "13:30-14:20": {
+      "Y1A": {"subject": "Embedded Systems", "teacher": "Larissa"},
+      "Y1B": {"subject": "English", "teacher": "Egide"},
+      "Y1C": {"subject": "WUI", "teacher": "Damas"},
+
+      "Y2A": {"subject": "Adv Networking", "teacher": "Celestin"},
+      "Y2B": {"subject": "English", "teacher": "Alphonse"},
+      "Y2C": {"subject": "Embedded Systems", "teacher": "Gabriel"},
+
+      "Y3A": {"subject": "Physics Projecte", "teacher": "—"},
+      "Y3B": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "14:20-15:10": {
+      "Y1A": {"subject": "Embedded Systems", "teacher": "Larissa"},
+      "Y1B": {"subject": "English", "teacher": "Egide"},
+      "Y1C": {"subject": "WUI", "teacher": "Damas"},
+
+      "Y2A": {"subject": "Adv Networking", "teacher": "Celestin"},
+      "Y2B": {"subject": "English", "teacher": "Alphonse"},
+      "Y2C": {"subject": "Intelligent Robotics", "teacher": "Gabriel"},
+
+      "Y3A": {"subject": "Physics Projecte", "teacher": "—"},
+      "Y3B": {"subject": "ML with Python", "teacher": "Mukama"},
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "15:20-16:10": {
+      "Y1A": {"subject": "English", "teacher": "Egide"},
+      "Y1B": {"subject": "Embedded Systems", "teacher": "Larissa"},
+      "Y1C": {"subject": "PHP", "teacher": "Olivier"},
+
+      "Y2A": {"subject": "Adv Networking", "teacher": "Celestin"},
+      "Y2B": {"subject": "Physics Projecte", "teacher": "—"},
+      "Y2C": {"subject": "Math", "teacher": "Bosco"},
+
+      "Y3A": {"subject": "Intelligent Robotics", "teacher": "Gabriel"},
+      "Y3B": null,
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "16:10-17:00": {
+      "Y1A": {"subject": "English", "teacher": "Egide"},
+      "Y1B": {"subject": "Embedded Systems", "teacher": "Larissa"},
+      "Y1C": {"subject": "PHP", "teacher": "Olivier"},
+
+      "Y2A": {"subject": "Physics Projecte", "teacher": "—"},
+      "Y2B": {"subject": "Math", "teacher": "Bosco"},
+      "Y2C": {"subject": "Intelligent Robotics", "teacher": "Gabriel"},
+
+      "Y3A": null,
+      "Y3B": null,
+      "Y3C": null,
+      "Y3D": null
+    }
+
+  }
+},
+{
+  "day": "Friday",
+  "schedule": {
+
+    "08:30-09:20": {
+      "Y1A": {"subject": "Databases", "teacher": "Awet"},
+      "Y1B": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y1C": {"subject": "English", "teacher": "Egide"},
+
+      "Y2A": {"subject": "Java", "teacher": "Larissa"},
+      "Y2B": {"subject": "Adv DB", "teacher": "Olivier"},
+      "Y2C": {"subject": "Mobile Dev", "teacher": "Stanley"},
+
+      "Y3A": {"subject": "Physics", "teacher": "JDD"},
+      "Y3B": {"subject": "Intelligent Robotics", "teacher": "Gabriel"},
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "09:20-10:10": {
+      "Y1A": {"subject": "Databases", "teacher": "Awet"},
+      "Y1B": {"subject": "Math", "teacher": "Emmanuel"},
+      "Y1C": {"subject": "English", "teacher": "Egide"},
+
+      "Y2A": {"subject": "Java", "teacher": "Larissa"},
+      "Y2B": {"subject": "Adv DB", "teacher": "Olivier"},
+      "Y2C": {"subject": "Mobile Dev", "teacher": "Stanley"},
+
+      "Y3A": {"subject": "Physics", "teacher": "JDD"},
+      "Y3B": {"subject": "Intelligent Robotics", "teacher": "Gabriel"},
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "10:30-11:20": {
+      "Y1A": {"subject": "English", "teacher": "Egide"},
+      "Y1B": {"subject": "PHP", "teacher": "Olivier"},
+      "Y1C": {"subject": "DSA", "teacher": "Damascene"},
+
+      "Y2A": {"subject": "Java", "teacher": "Larissa"},
+      "Y2B": {"subject": "SE", "teacher": "Dr AWET"},
+      "Y2C": {"subject": "Math", "teacher": "Emmanuel"},
+
+      "Y3A": {"subject": "Physics", "teacher": "JDD"},
+      "Y3B": {"subject": "Intelligent Robotics", "teacher": "Gabriel"},
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "11:20-12:10": {
+      "Y1A": {"subject": "English", "teacher": "Egide"},
+      "Y1B": {"subject": "PHP", "teacher": "Olivier"},
+      "Y1C": {"subject": "Embedded Systems", "teacher": "Larissa"},
+
+      "Y2A": {"subject": "DSA", "teacher": "Damascene"},
+      "Y2B": {"subject": "SE", "teacher": "Dr AWET"},
+      "Y2C": {"subject": "Math", "teacher": "Emmanuel"},
+
+      "Y3A": {"subject": "Intelligent Robotics", "teacher": "Gabriel"},
+      "Y3B": null,
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "13:30-14:20": {
+      "Y1A": {"subject": "Physics", "teacher": "JDD"},
+      "Y1B": {"subject": "English", "teacher": "Egide"},
+      "Y1C": {"subject": "Embedded Systems", "teacher": "Larissa"},
+
+      "Y2A": {"subject": "Adv DB", "teacher": "Olivier"},
+      "Y2B": {"subject": "DSA", "teacher": "Damascene"},
+      "Y2C": {"subject": "Math", "teacher": "Emmanuel"},
+
+      "Y3A": {"subject": "Intelligent Robotics", "teacher": "Gabriel"},
+      "Y3B": null,
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "14:20-15:10": {
+      "Y1A": {"subject": "Physics", "teacher": "JDD"},
+      "Y1B": {"subject": "English", "teacher": "Egide"},
+      "Y1C": {"subject": "Java", "teacher": "Larissa"},
+
+      "Y2A": {"subject": "Adv DB", "teacher": "Olivier"},
+      "Y2B": {"subject": "DSA", "teacher": "Damascene"},
+      "Y2C": null,
+
+      "Y3A": {"subject": "Intelligent Robotics", "teacher": "Gabriel"},
+      "Y3B": null,
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "15:20-16:10": {
+      "Y1A": null,
+      "Y1B": null,
+      "Y1C": null,
+
+      "Y2A": {"subject": "Java", "teacher": "Larissa"},
+      "Y2B": {"subject": "SE", "teacher": "Dr AWET"},
+      "Y2C": {"subject": "Embedded Systems", "teacher": "Gabriel"},
+
+      "Y3A": null,
+      "Y3B": null,
+      "Y3C": null,
+      "Y3D": null
+    },
+
+    "16:10-17:00": {
+       "Y1A": null,
+      "Y1B": null,
+      "Y1C": null,
+
+      "Y2A": {"subject": "Java", "teacher": "Larissa"},
+      "Y2B": {"subject": "SE", "teacher": "Dr AWET"},
+      "Y2C": {"subject": "Embedded Systems", "teacher": "Gabriel"},
+
+      "Y3A": null,
+      "Y3B": null,
+      "Y3C": null,
+      "Y3D": null
+    }
+
+  }
+}
+]
