@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ChevronDown, GraduationCap, KeyRound, Lock, LogIn, ShieldCheck, User, UserPlus } from 'lucide-react';
 import LogoImg from '../assets/logo.jpg'; 
-import { api } from '../api';
+import { api, normalizeOtp } from '../api';
 
 const Auth = ({ onLoginSuccess }) => {
   const [mode, setMode] = useState('login');
@@ -320,13 +320,18 @@ const title = mode === 'login' ? 'Welcome Back.' : mode === 'signup' ? 'Create A
                   <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#000042] transition-colors" size={20} />
                   <input
                     type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
                     required
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    className="w-full pl-12 pr-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-bold text-[#001f3f] focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                    onChange={(e) => setOtp(normalizeOtp(e.target.value))}
+                    className="w-full pl-12 pr-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-bold text-[#001f3f] focus:ring-2 focus:ring-blue-100 outline-none transition-all tracking-widest"
                     placeholder="123456"
                   />
                 </div>
+                <p className="ml-1 text-[10px] font-medium text-slate-400">
+                  Paste from email — spaces and symbols are removed automatically.
+                </p>
               </div>
 
               <button

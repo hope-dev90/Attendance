@@ -32,6 +32,12 @@ const generateTokens = (rep) => {
 const generateOTP = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
+/** Strips spaces, bullets, tabs, etc. from pasted codes (e.g. "7 4 5 • 4 8 9"). */
+const normalizeOtp = (value) =>
+  String(value ?? '')
+    .replace(/\D/g, '')
+    .slice(0, 6);
+
 const sendOTPEmail = async (email, fullName, otp) => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     return { sent: false, error: 'Email credentials are not configured.' };
@@ -375,10 +381,13 @@ const signup = async (req, res) => {
 };
 
 const verifyOTP = async (req, res) => {
-  const { email, otp } = req.body;
+  const { email, otp: rawOtp } = req.body;
+  const otp = normalizeOtp(rawOtp);
 
-  if (!email || !otp) {
-    return res.status(400).json({ message: 'Email and OTP are required.' });
+  if (!email || otp.length !== 6) {
+    return res
+      .status(400)
+      .json({ message: 'Email and a 6-digit verification code are required.' });
   }
 
   try {

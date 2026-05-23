@@ -16,6 +16,11 @@ const clearAuth = () => {
   localStorage.removeItem('staffnetAuth');
 };
 
+export const normalizeOtp = (value) =>
+  String(value ?? '')
+    .replace(/\D/g, '')
+    .slice(0, 6);
+
 const apiRequest = async (path, options = {}) => {
   const auth = getStoredAuth();
   const headers = {
@@ -56,7 +61,7 @@ export const api = {
   }),
   verifyOtp: (email, otp) => apiRequest('/api/auth/verify-otp', {
     method: 'POST',
-    body: JSON.stringify({ email, otp }),
+    body: JSON.stringify({ email, otp: normalizeOtp(otp) }),
   }),
   resendOtp: (email) => apiRequest('/api/auth/resend-otp', {
     method: 'POST',
