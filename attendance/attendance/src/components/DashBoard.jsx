@@ -33,11 +33,14 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    console.log("Selected file:", file);
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const base64 = e.target.result;
+        console.log("Base64 result:", base64);
         setProfilePic(base64);
+        console.log("Set profilePic state");
         if (isEditing) {
           setEditForm(prev => ({ ...prev, profilePic: base64 }));
         }
@@ -76,6 +79,7 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
     },
   ];
 
+  console.log("Rendering Dashboard: profilePic =", profilePic, ", profileData.profilePic =", profileData.profilePic);
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
       <nav className="sticky top-0 z-50 bg-[#2e5a88] text-white px-6 py-4 flex justify-between items-center shadow-lg">
@@ -91,7 +95,7 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
         </div>
         
         <div className="flex items-center gap-5">
-          <button onClick={() => setShowProfile(true)} className="flex items-center gap-2 hover:bg-white/10 p-2 rounded-xl transition-all">
+          <button onClick={() => { setShowProfile(true); setProfilePic(profileData.profilePic); }} className="flex items-center gap-2 hover:bg-white/10 p-2 rounded-xl transition-all">
             {profilePic || profileData.profilePic ? (
               <img 
                 src={profilePic || profileData.profilePic} 
@@ -166,7 +170,7 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
           <div className="bg-white rounded-[2.5rem] max-w-md w-full shadow-2xl overflow-hidden">
             <div className="bg-gradient-to-r from-[#2e5a88] to-[#1e3f63] p-8 text-white flex justify-between items-center">
               <h2 className="text-3xl font-black">My Profile</h2>
-              <button onClick={() => { setShowProfile(false); setIsEditing(false); }} className="hover:bg-white/20 p-2 rounded-xl transition-all">
+              <button onClick={() => { setShowProfile(false); setIsEditing(false); setProfilePic(profileData.profilePic); }} className="hover:bg-white/20 p-2 rounded-xl transition-all">
                 <X size={24} />
               </button>
             </div>
@@ -315,7 +319,10 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
                     </button>
                     <button 
                       onClick={() => { 
-                        setSavedProfile({ ...editForm, profilePic: profilePic || editForm.profilePic }); 
+                        const newProfile = { ...editForm, profilePic: profilePic || editForm.profilePic };
+                        console.log("Saving profile:", newProfile);
+                        setSavedProfile(newProfile); 
+                        setProfilePic(newProfile.profilePic);
                         setIsEditing(false); 
                       }} 
                       className="flex-1 px-6 py-3 bg-[#2e5a88] text-white rounded-xl font-bold hover:bg-[#1e3f63] transition-all"
