@@ -32,8 +32,32 @@ const sendOTPEmail = async (email, fullName, otp) => {
 
   try {
     const otpDigits = otp.split('');
-    const [d1, d2, d3, d4, d5, d6] = otpDigits;
     const firstName = fullName.split(' ')[0];
+
+    const digitCell = (digit) => `
+            <td width="46" height="56" align="center" valign="middle"
+              style="width:46px;height:56px;background-color:#ffffff;border:1.5px solid #b8c9de;border-radius:12px;font-family:'SF Mono','Consolas','Courier New',monospace;font-size:26px;font-weight:700;color:#051d3b;line-height:56px;mso-line-height-rule:exactly;text-align:center;vertical-align:middle;">
+              ${digit}
+            </td>`;
+
+    const digitGap = `
+            <td width="8" style="width:8px;font-size:0;line-height:0;">&nbsp;</td>`;
+
+    const digitGroupGap = `
+            <td width="20" align="center" valign="middle"
+              style="width:20px;font-family:'DM Sans',Arial,sans-serif;font-size:22px;font-weight:600;color:#94a8c4;line-height:56px;text-align:center;vertical-align:middle;">
+              &bull;
+            </td>`;
+
+    const otpDigitRow = otpDigits
+      .map((digit, i) => {
+        const cell = digitCell(digit);
+        if (i === 2) return cell + digitGroupGap;
+        if (i < otpDigits.length - 1) return cell + digitGap;
+        return cell;
+      })
+      .join('');
+
     await transporter.sendMail({
       from: `Class Rep System <${process.env.EMAIL_USER}>`,
       to: email,
@@ -45,148 +69,72 @@ const sendOTPEmail = async (email, fullName, otp) => {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Verify your Class Rep account</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #dde3ee;
-      font-family: 'DM Sans', sans-serif;
+      background: #eef2f7;
+      font-family: 'DM Sans', Arial, sans-serif;
       padding: 48px 16px;
       -webkit-font-smoothing: antialiased;
     }
     .wrapper {
       max-width: 520px;
+      width: 100%;
       margin: 0 auto;
       background: #ffffff;
-      border-radius: 24px;
+      border-radius: 20px;
       overflow: hidden;
-      border: 1px solid #cdd5e0;
+      border: 1px solid #dce6f2;
     }
     .header {
-      background: #1e3f63;
-      padding: 20px 32px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      background: linear-gradient(135deg, #1a3b66 0%, #234a7a 100%);
+      padding: 24px 28px;
     }
-    .logo-box {
-      width: 40px;
-      height: 40px;
-      background-image: url'../attendance/attendance/src/assets/logo.jpg;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .logo-text { }
     .logo-name {
-      font-size: 16px;
-      font-weight: 800;
-      color: #fff;
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
       line-height: 1.2;
-      letter-spacing: 0.1px;
     }
     .logo-sub {
-      font-size: 11.5px;
-      color: #7fb2d8;
-      margin-top: 2px;
+      font-size: 12px;
+      color: #8fa7c7;
+      margin-top: 1px;
     }
     .body {
-      padding: 40px 36px 36px;
-    }
-    .shield-wrap {
-      width: 48px;
-      height: 48px;
-      background: #e8f0fb;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 22px;
+      padding: 36px 28px 28px;
     }
     h1 {
-      font-size: 21px;
-      font-weight: 800;
-      color: #001f3f;
-      margin-bottom: 10px;
-      letter-spacing: -0.2px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #051d3b;
+      margin-bottom: 16px;
     }
     .intro {
       font-size: 14px;
-      color: #5a6a82;
-      line-height: 1.75;
+      color: #4a5c75;
+      line-height: 1.6;
       margin-bottom: 32px;
     }
     .intro strong {
       font-weight: 700;
-      color: #1e3f63;
+      color: #051d3b;
     }
-    .otp-box {
-      background: #f3f7fd;
-      border-radius: 16px;
-      padding: 26px 24px;
-      margin-bottom: 24px;
-      border: 1px solid #dce6f2;
-      text-align: center;
+    .notice p {
+      font-size: 12.5px;
+      color: #516580;
+      line-height: 1.5;
     }
-    .otp-label {
-      font-size: 10.5px;
-      font-weight: 700;
-      color: #8a9ab5;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-    .digits {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-    }
-    .digit {
-      width: 54px;
-      height: 64px;
-      background: #ffffff;
-      border: 1.5px solid #2e5a88;
-      border-radius: 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      font-weight: 800;
-      color: #001f3f;
-      letter-spacing: 0;
-    }
-    .divider {
-      width: 20px;
-      height: 1.5px;
-      background: #c0cfe2;
-      align-self: center;
-      flex-shrink: 0;
-    }
-    .notice {
-      background: #eef4fd;
-      border-radius: 12px;
-      padding: 14px 16px;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 32px;
-      border: 1px solid #cddaf0;
-    }
-    .notice svg { flex-shrink: 0; margin-top: 1px; }
-    .notice p { font-size: 13px; color: #4a6282; line-height: 1.65; }
     .footer {
-      border-top: 1px solid #eaeff6;
-      padding-top: 20px;
       text-align: center;
       font-size: 12px;
-      color: #9aa5b8;
+      color: #8c9cb6;
     }
     .footer a {
-      color: #2e5a88;
+      color: #1a3b66;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 500;
     }
   </style>
 </head>
@@ -194,66 +142,109 @@ const sendOTPEmail = async (email, fullName, otp) => {
   <div class="wrapper">
 
     <div class="header">
-      <div class="logo-box">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="3" width="8" height="8" rx="2" fill="#1e3f63"/>
-          <rect x="13" y="3" width="8" height="8" rx="2" fill="#2e5a88"/>
-          <rect x="3" y="13" width="8" height="8" rx="2" fill="#2e5a88"/>
-          <rect x="13" y="13" width="8" height="8" rx="2" fill="#1e3f63"/>
-        </svg>
-      </div>
-      <div class="logo-text">
-        <div class="logo-name">Class Rep</div>
-        <div class="logo-sub">Student management system</div>
-      </div>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td width="44" style="padding-right: 12px; vertical-align: middle;">
+            <table border="0" cellpadding="0" cellspacing="0" width="44" height="44"
+              style="width:44px;height:44px;background-color:#ffffff;border-radius:10px;">
+              <tr>
+                <td align="center" valign="middle" height="44" style="border-radius:10px;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:block;">
+                    <rect x="3" y="3" width="8" height="8" rx="2" fill="#1a3b66"/>
+                    <rect x="13" y="3" width="8" height="8" rx="2" fill="#2d5b94"/>
+                    <rect x="3" y="13" width="8" height="8" rx="2" fill="#2d5b94"/>
+                    <rect x="13" y="13" width="8" height="8" rx="2" fill="#1a3b66"/>
+                  </svg>
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td style="vertical-align: middle;">
+            <div class="logo-name">Class Rep</div>
+            <div class="logo-sub">Student management system</div>
+          </td>
+        </tr>
+      </table>
     </div>
 
     <div class="body">
 
-      <div class="shield-wrap">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2e5a88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <polyline points="9 12 11 14 15 10"/>
-        </svg>
-      </div>
+      <table border="0" cellpadding="0" cellspacing="0" width="44" height="44"
+        style="width:44px;height:44px;background-color:#e9f1fc;border-radius:10px;margin-bottom:24px;">
+        <tr>
+          <td align="center" valign="middle" height="44">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a3b66" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
+            </svg>
+          </td>
+        </tr>
+      </table>
 
       <h1>Verify your account</h1>
       <p class="intro">
         Hi <strong>${firstName}</strong>,<br>
-        Use the one-time code below to verify your Class Rep account. It expires in <strong>10 minutes</strong>.
+        Enter this verification code to complete your Class Rep signup. It expires in <strong>10 minutes</strong>.
       </p>
 
-      <div class="otp-box">
-        <div class="otp-label">Your verification code</div>
-        <div class="digits">
-          <div class="digit">${d1}</div>
-          <div class="digit">${d2}</div>
-          <div class="digit">${d3}</div>
-          <div class="divider"></div>
-          <div class="digit">${d4}</div>
-          <div class="digit">${d5}</div>
-          <div class="digit">${d6}</div>
-        </div>
-      </div>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%"
+        style="background-color:#f4f8fe;border-radius:16px;border:1px solid #e1ecf8;margin-bottom:24px;">
+        <tr>
+          <td align="center" style="padding:28px 16px 24px;">
+            <p style="margin:0 0 20px;font-size:11px;font-weight:700;color:#8c9cb6;letter-spacing:1.6px;text-transform:uppercase;font-family:'DM Sans',Arial,sans-serif;">
+              Verification code
+            </p>
+            <table border="0" cellpadding="0" cellspacing="0" align="center" role="presentation">
+              <tr>
+${otpDigitRow}
+              </tr>
+            </table>
+            <p style="margin:18px 0 0;font-size:12px;color:#6b7f99;font-family:'DM Sans',Arial,sans-serif;">
+              Copy the full code or enter each digit in the app.
+            </p>
+          </td>
+        </tr>
+      </table>
 
-      <div class="notice">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2e5a88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        <p>If you didn't create this account, you can safely ignore this email. Your account remains secure.</p>
-      </div>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%"
+        style="background-color:#f0f5fc;border-radius:10px;border:1px solid #e1ecf8;margin-bottom:32px;">
+        <tr>
+          <td style="padding:14px 16px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+              <tr>
+                <td width="16" style="padding-right:10px;vertical-align:top;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a3b66" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;display:block;">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                </td>
+                <td style="vertical-align:top;">
+                  <p class="notice" style="margin:0;">If you did not request this code, you can safely ignore this email. No changes will be made to your account.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;">
+        <tr>
+          <td style="height:1px;background-color:#eef2f7;font-size:0;line-height:0;">&nbsp;</td>
+        </tr>
+      </table>
 
       <div class="footer">
-        Sent by <strong style="color:#2e5a88;">Class Rep</strong> &nbsp;&middot;&nbsp;
-        <a href="#">Unsubscribe</a>
+        Sent by <span style="font-weight:700;color:#1a3b66;">Class Rep</span>
+        &nbsp;&middot;&nbsp; Student management system
       </div>
 
     </div>
   </div>
 </body>
-</html>`,
+</html>
+
+`,
     });
 
     return { sent: true };

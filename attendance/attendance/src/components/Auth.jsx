@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { GraduationCap, KeyRound, Lock, LogIn, ShieldCheck, User, UserPlus } from 'lucide-react';
+import { ChevronDown, GraduationCap, KeyRound, Lock, LogIn, ShieldCheck, User, UserPlus } from 'lucide-react';
 import LogoImg from '../assets/logo.jpg'; 
 import { api } from '../api';
 
@@ -22,8 +22,9 @@ useEffect(() => {
       setClasses(items);
       setClassId((current) => current || String(items[0]?.id || ''));
     })
-    .catch(() => {
+    .catch((err) => {
       setClasses([]);
+      setError(err.message || 'Could not load classes. Make sure the backend is running.');
     });
 }, []);
 
@@ -231,18 +232,31 @@ const title = mode === 'login' ? 'Welcome Back.' : mode === 'signup' ? 'Create A
               <div className="space-y-2">
                 <label className="text-[11px] font-black text-[#000042] uppercase tracking-widest ml-1">Class</label>
                 <div className="relative group">
-                  <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#000042] transition-colors" size={20} />
+                  <GraduationCap
+                    className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#94a8c4] transition-colors group-focus-within:text-[#000042]"
+                    size={20}
+                  />
                   <select
                     required
                     value={classId}
                     onChange={(e) => setClassId(e.target.value)}
-                    className="w-full pl-12 pr-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-bold text-[#001f3f] focus:ring-2 focus:ring-blue-100 outline-none transition-all appearance-none"
+                    disabled={classes.length === 0}
+                    className="auth-select w-full min-h-[52px] cursor-pointer rounded-2xl border border-transparent bg-gray-50 py-3.5 pl-12 pr-11 text-base font-bold text-[#001f3f] outline-none transition-all focus:border-[#2e5a88]/30 focus:bg-white focus:ring-2 focus:ring-[#2e5a88]/20 disabled:cursor-wait disabled:opacity-60 sm:py-4 sm:text-sm"
                   >
-                    <option value="" disabled>Select your class</option>
+                    <option value="" disabled>
+                      {classes.length === 0 ? 'Loading classes…' : 'Select your class'}
+                    </option>
                     {classes.map((item) => (
-                      <option key={item.id} value={item.id}>{item.name}</option>
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
                     ))}
                   </select>
+                  <ChevronDown
+                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#2e5a88] transition-colors group-focus-within:text-[#000042]"
+                    size={18}
+                    aria-hidden
+                  />
                 </div>
               </div>
 

@@ -4,8 +4,7 @@
  */
 require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 const pool = require('./db');
-const path = require('path');
-const students = require(path.resolve(__dirname, '../../../attendance/attendance/src/data/students.json'));
+const { students } = require('./studentsData');
 
 (async () => {
   try {

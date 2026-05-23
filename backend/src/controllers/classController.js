@@ -1,7 +1,19 @@
 const pool = require('../config/db');
+const { getClassNamesFromJson } = require('../config/studentsData');
+
+const syncClassesFromStudentsJson = async () => {
+  const names = getClassNamesFromJson();
+  for (const name of names) {
+    await pool.query(
+      'INSERT INTO classes (name) VALUES ($1) ON CONFLICT (name) DO NOTHING',
+      [name],
+    );
+  }
+};
 
 const getAllClasses = async (req, res) => {
   try {
+    await syncClassesFromStudentsJson();
     const result = await pool.query('SELECT * FROM classes ORDER BY name');
     return res.json(result.rows);
   } catch (err) {
