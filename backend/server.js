@@ -28,7 +28,6 @@ const corsOptions = {
   credentials: true,
 };
 
-// Socket.io — StaffNet will connect here for real-time updates
 const io = new Server(httpServer, {
   cors: {
     origin: clientOrigins,
@@ -46,13 +45,13 @@ io.on('connection', (socket) => {
   });
 });
 
-// Middleware
+
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(generalLimiter);
 
-// Routes
+
 app.use('/api/auth', require('./src/routes/auth'));
 app.use('/api/classes', require('./src/routes/classes'));
 app.use('/api/students', require('./src/routes/students'));
@@ -62,13 +61,11 @@ app.use('/api/lesson-reports', require('./src/routes/lessonReports'));
 app.use('/api/routes', require('./src/routes/devGuide'));
 app.use('/api/dev-guide', require('./src/routes/devGuide'));
 
-// Health check
+
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-// 404
 app.use((req, res) => res.status(404).json({ message: 'Route not found.' }));
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err.message);
   res.status(500).json({ message: 'Internal server error.' });

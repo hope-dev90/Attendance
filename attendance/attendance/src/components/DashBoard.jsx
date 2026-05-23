@@ -175,7 +175,7 @@ const Dashboard = ({ onLogout, onSectionClick, userEmail, rep }) => {
                 <X size={24} />
               </button>
             </div>
-            <div className="p-8">
+            <div className="p-8 max-h-[80vh] overflow-y-auto">
               <div className="text-center mb-8">
                 <div className="relative w-20 h-20 mx-auto mb-4">
                   {profilePic || profileData.profilePic ? (
