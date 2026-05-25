@@ -41,6 +41,12 @@ const apiRequest = async (path, options = {}) => {
   const data = isJson ? await response.json() : await response.text();
 
   if (!response.ok) {
+    // On 401, clear stale token and force re-login silently
+    if (response.status === 401) {
+      clearAuth();
+      window.location.reload();
+      return;
+    }
     throw new Error(data?.message || 'Request failed. Please try again.');
   }
 

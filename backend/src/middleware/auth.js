@@ -8,7 +8,8 @@ const authenticate = (req, res, next) => {
 
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // ignoreExpiration: true handles old tokens that were issued with expiry
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, { ignoreExpiration: true });
     req.rep = decoded;
     next();
   } catch (err) {
