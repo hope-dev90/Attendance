@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import {
   ArrowLeft, Send, Search, CheckCircle2, Download, FileText,
-  Plus, History, LogOut, UserCheck, LayoutDashboard, Menu, X
+  Plus, History, LogOut, UserCheck, LayoutDashboard, Menu, X, Bell
 } from "lucide-react";
+import NotificationSettings from './NotificationSettings';
+import useNotifications from '../hooks/useNotifications';
 import LogoImg from "../assets/logo.jpg";
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis,
@@ -117,6 +119,10 @@ const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
   const [apiError,       setApiError]       = useState("");
   const [sidebarOpen,    setSidebarOpen]    = useState(false);
   const [activePage,     setActivePage]     = useState("attendance");
+  const [showNotifSettings, setShowNotifSettings] = useState(false);
+
+  // Attendance reminders (no lessons/teacherStatus needed here)
+  useNotifications([], {}, isSubmitted);
 
   /* Load students from backend */
   useEffect(() => {
@@ -294,6 +300,12 @@ const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
                 </p>
               </div>
               <div style={{ display:"flex", gap:10 }}>
+                <button
+                  onClick={() => setShowNotifSettings(true)}
+                  style={{ display:"flex", alignItems:"center", gap:7, background:"#fff", border:"1px solid #e8edf4", borderRadius:12, padding:"9px 16px", cursor:"pointer", fontWeight:700, fontSize:13, color:"#475569" }}
+                >
+                  <Bell size={16} color="#2e5a88" /> Notifications
+                </button>
                 <button className="nav-btn" onClick={() => handleNavigate(activePage === "history" ? "attendance" : "history")}>
                   <History size={16} />
                   {activePage === "history" ? "Close History" : "View History"}
@@ -303,6 +315,8 @@ const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
                 </button>
               </div>
             </div>
+
+            {showNotifSettings && <NotificationSettings onClose={() => setShowNotifSettings(false)} />}
 
             {apiError && (
               <div style={{ background:"#fff5f5", border:"1px solid #fecaca", color:"#dc2626", padding:"12px 18px", borderRadius:12, marginBottom:20, fontWeight:700, fontSize:13 }}>

@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import {
   User, CheckCircle, AlertCircle, Calendar,
   ArrowLeft, LayoutDashboard, Clock, Send, CheckCircle2,
-  LogOut, BookOpen, History, Menu, X, ClipboardList,
+  LogOut, BookOpen, History, Menu, X, ClipboardList, Bell,
 } from 'lucide-react';
 import timetableData from '../data/timetable.json';
 import { api } from '../api';
 import LogoImg from '../assets/logo.jpg';
+import NotificationSettings, { notify } from './NotificationSettings';
+import useNotifications from '../hooks/useNotifications';
 
 const NAVY    = '#2e5a88';
 const NAVY_DK = '#1e3f63';
@@ -90,6 +92,10 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
   const [submitting,    setSubmitting]    = useState(false);
   const [submitted,     setSubmitted]     = useState(false);
   const [message,       setMessage]       = useState('');
+  const [showNotifSettings, setShowNotifSettings] = useState(false);
+
+  // Wire desktop notifications
+  useNotifications(lessons, teacherStatus, submitted);
 
   useEffect(() => {
     const update = () => { setLessons(getTodayLessons(timetableData, monitorClass)); setLoading(false); };
@@ -152,7 +158,15 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
           <h1 className="sn-page-title">Lesson Tracking</h1>
           <p className="sn-page-sub">{todayFull} — Class {monitorClass}</p>
         </div>
+        <button
+          onClick={() => setShowNotifSettings(true)}
+          style={{ display:'flex', alignItems:'center', gap:7, background:'#fff', border:'1px solid #e8edf4', borderRadius:12, padding:'9px 16px', cursor:'pointer', fontWeight:700, fontSize:13, color:'#475569', boxShadow:'0 1px 4px rgba(0,0,0,.05)' }}
+        >
+          <Bell size={16} color="#2e5a88" /> Notifications
+        </button>
       </div>
+
+      {showNotifSettings && <NotificationSettings onClose={() => setShowNotifSettings(false)} />}
 
       <div className="sn-stats-grid">
         {[
