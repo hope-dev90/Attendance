@@ -347,10 +347,23 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
               { present:false, icon:<AlertCircle size={17}/>, label:'Teacher Absent',  activeColor:'#ef4444', activeShadow:'rgba(239,68,68,.25)',   inactiveStyle:{ background:'#fff', color:'#ef4444', border:'1px solid #fecaca', boxShadow:'none' } },
             ].map(({ present, icon, label, activeColor, activeShadow, inactiveStyle }) => {
               const isActive = teacherStatus[currentLesson.timeSlot] === present;
+              const isLocked = lockedSlots.has(currentLesson.timeSlot);
               return (
-                <button key={label} onClick={() => mark(currentLesson.timeSlot, present)}
-                  style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:10, padding:'15px', borderRadius:14, cursor:'pointer', fontWeight:900, fontSize:13, letterSpacing:'0.07em', textTransform:'uppercase', fontFamily:"'DM Sans',sans-serif", transition:'all .15s',
-                    ...(isActive ? { background:activeColor, color:'#fff', border:'none', boxShadow:`0 4px 14px ${activeShadow}` } : inactiveStyle) }}>
+                <button key={label}
+                  onClick={() => mark(currentLesson.timeSlot, present)}
+                  disabled={isLocked}
+                  style={{
+                    display:'flex', alignItems:'center', justifyContent:'center', gap:10,
+                    padding:'15px', borderRadius:14, fontWeight:900, fontSize:13,
+                    letterSpacing:'0.07em', textTransform:'uppercase',
+                    fontFamily:"'DM Sans',sans-serif", transition:'all .15s',
+                    cursor:        isLocked ? 'not-allowed' : 'pointer',
+                    pointerEvents: isLocked ? 'none' : 'auto',
+                    opacity:       isLocked && !isActive ? 0.35 : 1,
+                    ...(isActive
+                      ? { background:activeColor, color:'#fff', border:'none', boxShadow:`0 4px 14px ${activeShadow}` }
+                      : inactiveStyle),
+                  }}>
                   {icon} {label}
                 </button>
               );
