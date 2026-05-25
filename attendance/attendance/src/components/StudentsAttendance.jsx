@@ -140,6 +140,23 @@ const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
       })
       .catch((err) => setApiError(err.message))
       .finally(() => setIsLoading(false));
+
+    // Check if already submitted today
+    const today = new Date().toISOString().split("T")[0];
+    api.getAttendanceHistory()
+      .then((history) => {
+        const todayRecord = history.find(h => h.session_date?.startsWith(today));
+        if (todayRecord) {
+          setApiError('ALREADY_SUBMITTED');
+          // Restore the submitted statuses so pills show correctly
+          if (todayRecord.records?.length) {
+            const restored = {};
+            todayRecord.records.forEach(r => { restored[r.student_id] = r.status; });
+            setAttendance(restored);
+          }
+        }
+      })
+      .catch(() => {});
   }, [monitorClass]);
 
   /* Load history when tab opens */
@@ -413,16 +430,40 @@ const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
                           <p style={{ fontSize:11, color:"#94a3b8", fontWeight:600 }}>{student.studentNumber}</p>
                         </div>
                         <span style={{ background:"#eff6ff", color:NAVY, padding:"3px 10px", borderRadius:20, fontSize:11, fontWeight:800 }}>{student.class}</span>
-                        <div style={{ display:"flex", background:"#f1f5f9", borderRadius:10, padding:3, gap:2 }}>
-                          <StatusBtn active={attendance[student.id] === "present"} onClick={() => toggleStatus(student.id, "present")} colorClass="bg-emerald-500" label="P" />
-                          <StatusBtn active={attendance[student.id] === "late"}    onClick={() => toggleStatus(student.id, "late")}    colorClass="bg-amber-400"   label="L" />
-                          <StatusBtn active={attendance[student.id] === "absent"}  onClick={() => toggleStatus(student.id, "absent")}  colorClass="bg-red-500"     label="A" />
-                        </div>
-                        {attendance[student.id] === "absent" && (
-                          <input type="text" value={notes[student.id] || ""}
-                            onChange={(e) => setNotes((prev) => ({ ...prev, [student.id]: e.target.value }))}
-                            placeholder="Reason for absence (optional)…"
-                            style={{ width:"100%", marginTop:4, padding:"8px 14px", border:"1px solid #fecaca", borderRadius:10, fontSize:13, color:"#64748b", background:"#fff" }} />
+                        {apiError === 'ALREADY_SUBMITTED' ? (
+                          /* Already submitted — show locked status pill */
+                          <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                            <span style={{
+                              background: attendance[student.id] === "present" ? "#dcfce7"
+                                        : attendance[student.id] === "absent"  ? "#fee2e2"
+                                        : "#fef3c7",
+                              color:      attendance[student.id] === "present" ? "#15803d"
+                                        : attendance[student.id] === "absent"  ? "#dc2626"
+                                        : "#92400e",
+                              padding:"4px 12px", borderRadius:20, fontSize:11, fontWeight:800,
+                            }}>
+                              {attendance[student.id] === "present" ? "✓ Present"
+                               : attendance[student.id] === "absent" ? "✗ Absent"
+                               : attendance[student.id] === "late"   ? "⏰ Late"
+                               : "—"}
+                            </span>
+                            <span style={{ fontSize:10, color:"#94a3b8", fontWeight:600 }}>Submitted</span>
+                          </div>
+                        ) : (
+                          /* Normal marking buttons */
+                          <>
+                            <div style={{ display:"flex", background:"#f1f5f9", borderRadius:10, padding:3, gap:2 }}>
+                              <StatusBtn active={attendance[student.id] === "present"} onClick={() => toggleStatus(student.id, "present")} colorClass="bg-emerald-500" label="P" />
+                              <StatusBtn active={attendance[student.id] === "late"}    onClick={() => toggleStatus(student.id, "late")}    colorClass="bg-amber-400"   label="L" />
+                              <StatusBtn active={attendance[student.id] === "absent"}  onClick={() => toggleStatus(student.id, "absent")}  colorClass="bg-red-500"     label="A" />
+                            </div>
+                            {attendance[student.id] === "absent" && (
+                              <input type="text" value={notes[student.id] || ""}
+                                onChange={(e) => setNotes((prev) => ({ ...prev, [student.id]: e.target.value }))}
+                                placeholder="Reason for absence (optional)…"
+                                style={{ width:"100%", marginTop:4, padding:"8px 14px", border:"1px solid #fecaca", borderRadius:10, fontSize:13, color:"#64748b", background:"#fff" }} />
+                            )}
+                          </>
                         )}
                       </div>
                     ))}
