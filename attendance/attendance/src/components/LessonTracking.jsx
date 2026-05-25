@@ -89,12 +89,13 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
   const [lessons,       setLessons]       = useState([]);
   const [loading,       setLoading]       = useState(true);
   const [teacherStatus, setTeacherStatus] = useState({});
+  const [lockedSlots,   setLockedSlots]   = useState(new Set()); // once marked, locked
   const [submitting,    setSubmitting]    = useState(false);
+  const [submittedSlots,setSubmittedSlots]= useState(new Set()); // track submitted lessons
   const [submitted,     setSubmitted]     = useState(false);
   const [message,       setMessage]       = useState('');
   const [showNotifSettings, setShowNotifSettings] = useState(false);
 
-  // Wire desktop notifications
   useNotifications(lessons, teacherStatus, submitted);
 
   useEffect(() => {
@@ -104,7 +105,12 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
     return () => clearInterval(t);
   }, [monitorClass]);
 
-  const mark = (slot, present) => setTeacherStatus(prev => ({ ...prev, [slot]: present }));
+  const mark = (slot, present) => {
+    // Once marked, cannot change — lock it
+    if (lockedSlots.has(slot)) return;
+    setTeacherStatus(prev => ({ ...prev, [slot]: present }));
+    setLockedSlots(prev => new Set([...prev, slot]));
+  };
   const markedCount   = Object.keys(teacherStatus).length;
   const allMarked     = lessons.length > 0 && markedCount === lessons.length;
   const presentCount  = Object.values(teacherStatus).filter(v => v === true).length;
@@ -113,17 +119,20 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
 
   const handleSubmit = async () => {
     if (!currentLesson) return;
+    const slot = currentLesson.timeSlot;
+    if (submittedSlots.has(slot)) return; // already submitted this slot
     setSubmitting(true); setMessage('');
     try {
       await api.submitLessonReport({
         report_date: todayISO,
         lessons: [{
-          timeSlot:       currentLesson.timeSlot,
+          timeSlot:       slot,
           subject:        currentLesson.subject,
           teacher:        currentLesson.teacher,
-          teacherPresent: teacherStatus[currentLesson.timeSlot] ?? null,
+          teacherPresent: teacherStatus[slot] ?? null,
         }],
       });
+      setSubmittedSlots(prev => new Set([...prev, slot]));
       setSubmitted(true);
     } catch (err) {
       setMessage(err.message || 'Failed to submit.');
@@ -136,14 +145,22 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
     </div>
   );
 
-  if (submitted) return (
+  if (submitted && currentLesson && submittedSlots.has(currentLesson.timeSlot)) return (
     <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minHeight:'60vh', animation:'snFadeIn .3s ease' }}>
       <div style={{ width:72, height:72, borderRadius:'50%', background:'#d1fae5', color:'#10b981', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:16 }}>
         <CheckCircle2 size={36} />
       </div>
       <h2 style={{ fontSize:26, fontWeight:900, color:'#1e293b', marginBottom:6 }}>Report Submitted!</h2>
-      <p style={{ color:'#94a3b8', marginBottom:24 }}>Lesson report for {monitorClass} sent to StaffNet.</p>
-      <button className="sn-primary-btn" onClick={() => setSubmitted(false)}>Take Another Report</button>
+      <p style={{ color:'#94a3b8', marginBottom:6 }}>
+        {currentLesson.subject} — {currentLesson.teacher} marked as{' '}
+        <strong style={{ color: teacherStatus[currentLesson.timeSlot] ? '#10b981' : '#ef4444' }}>
+          {teacherStatus[currentLesson.timeSlot] ? 'Present' : 'Absent'}
+        </strong>
+      </p>
+      <p style={{ color:'#94a3b8', fontSize:13, marginBottom:24 }}>
+        {submittedSlots.size} lesson{submittedSlots.size !== 1 ? 's' : ''} submitted today
+      </p>
+      <button className="sn-primary-btn" onClick={() => setSubmitted(false)}>Back to Schedule</button>
     </div>
   );
 
@@ -248,20 +265,40 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
                   <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
                     <div className="sn-toggle-group">
                       <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, true)}
-                        style={{ background:status===true ? '#10b981':'transparent', color:status===true ? '#fff':'#94a3b8', boxShadow:status===true ? '0 2px 6px rgba(16,185,129,.25)':'none' }}>
+                        disabled={lockedSlots.has(lesson.timeSlot)}
+                        style={{
+                          background: status===true ? '#10b981':'transparent',
+                          color:      status===true ? '#fff':'#94a3b8',
+                          boxShadow:  status===true ? '0 2px 6px rgba(16,185,129,.25)':'none',
+                          cursor:     lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
+                          opacity:    lockedSlots.has(lesson.timeSlot) && status!==true ? 0.35 : 1,
+                        }}>
                         ✓ Present
                       </button>
                       <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, false)}
-                        style={{ background:status===false ? '#ef4444':'transparent', color:status===false ? '#fff':'#94a3b8', boxShadow:status===false ? '0 2px 6px rgba(239,68,68,.2)':'none' }}>
+                        disabled={lockedSlots.has(lesson.timeSlot)}
+                        style={{
+                          background: status===false ? '#ef4444':'transparent',
+                          color:      status===false ? '#fff':'#94a3b8',
+                          boxShadow:  status===false ? '0 2px 6px rgba(239,68,68,.2)':'none',
+                          cursor:     lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
+                          opacity:    lockedSlots.has(lesson.timeSlot) && status!==false ? 0.35 : 1,
+                        }}>
                         ✗ Absent
                       </button>
                     </div>
-                    <button className="sn-primary-btn" onClick={handleSubmit}
-                      disabled={submitting || !isMarked}
-                      style={{ padding:'8px 18px', fontSize:12, textTransform:'uppercase', letterSpacing:'0.06em' }}>
-                      {submitting ? <span className="sn-spinner" /> : <Send size={14} />}
-                      {submitting ? 'Sending…' : 'Submit'}
-                    </button>
+                    {submittedSlots.has(lesson.timeSlot) ? (
+                      <span style={{ fontSize:12, fontWeight:700, color:'#10b981', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:8, padding:'6px 12px' }}>
+                        ✓ Submitted
+                      </span>
+                    ) : (
+                      <button className="sn-primary-btn" onClick={handleSubmit}
+                        disabled={submitting || status === undefined}
+                        style={{ padding:'8px 18px', fontSize:12, textTransform:'uppercase', letterSpacing:'0.06em' }}>
+                        {submitting ? <span className="sn-spinner" /> : <Send size={14} />}
+                        {submitting ? 'Sending…' : 'Submit'}
+                      </button>
+                    )}
                   </div>
                 ) : (
                   <div className="sn-toggle-group">

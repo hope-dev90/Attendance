@@ -28,18 +28,18 @@ export default function useNotifications(lessons, teacherStatus, attendanceSubmi
       const now   = new Date();
       const total = now.getHours() * 60 + now.getMinutes();
 
-      // 7:55 AM — attendance window reminder
+      // 7:55 AM — attendance window reminder (fires between 7:55 and 7:59)
       if (settings.attendanceReminder && !attendanceSubmitted) {
-        if (total === 7 * 60 + 55 && !firedRef.current.has('att-reminder')) {
+        if (total >= 7 * 60 + 55 && total < 8 * 60 && !firedRef.current.has('att-reminder')) {
           firedRef.current.add('att-reminder');
           fireNotif('attendance', '⏰ Mark Attendance Soon',
             'The attendance window opens in 5 minutes (8:00 AM). Get ready!', 'att-reminder');
         }
       }
 
-      // 8:25 AM — delayed warning
+      // 8:25 AM — delayed warning (fires between 8:25 and 8:29)
       if (settings.delayedWarning && !attendanceSubmitted) {
-        if (total === 8 * 60 + 25 && !firedRef.current.has('delayed-warning')) {
+        if (total >= 8 * 60 + 25 && total < 8 * 60 + 30 && !firedRef.current.has('delayed-warning')) {
           firedRef.current.add('delayed-warning');
           fireNotif('delayed', '⚠️ Deadline in 5 Minutes',
             'Submit attendance before 8:30 AM or it will be marked as delayed.', 'delayed-warning');
