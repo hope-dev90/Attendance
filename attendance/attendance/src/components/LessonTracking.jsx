@@ -85,7 +85,122 @@ const PlaceholderPage = ({ title, icon: Icon }) => (
   </div>
 );
 
-const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
+/* ── Lesson History Page ── */
+const LessonHistoryPage = ({ monitorClass }) => {
+  const [reports,  setReports]  = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [expanded, setExpanded] = useState(null);
+
+  useEffect(() => {
+    api.getLessonReports()
+      .then(setReports)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const fmt = (iso) => new Date(iso).toLocaleDateString('en-GB', {
+    weekday:'short', day:'numeric', month:'short', year:'numeric',
+  });
+
+  if (loading) return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:300 }}>
+      <div style={{ width:28, height:28, border:`3px solid #e2e8f0`, borderTopColor:NAVY, borderRadius:'50%', animation:'snSpin .7s linear infinite' }} />
+    </div>
+  );
+
+  if (reports.length === 0) return (
+    <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minHeight:'50vh', gap:12 }}>
+      <div style={{ width:64, height:64, borderRadius:'50%', background:'#f1f5f9', color:'#cbd5e1', display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <History size={28} />
+      </div>
+      <p style={{ fontWeight:900, fontSize:17, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.1em' }}>No History Yet</p>
+      <p style={{ fontSize:13, color:'#94a3b8' }}>Submitted lesson reports will appear here.</p>
+    </div>
+  );
+
+  return (
+    <div style={{ animation:'snFadeIn .25s ease' }}>
+      <div className="sn-page-header">
+        <div>
+          <h1 className="sn-page-title">Lesson History</h1>
+          <p className="sn-page-sub">Class {monitorClass} — {reports.length} report{reports.length !== 1 ? 's' : ''}</p>
+        </div>
+      </div>
+
+      <div className="sn-card" style={{ overflow:'hidden' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 22px', borderBottom:'1px solid #f1f5f9' }}>
+          <p style={{ fontWeight:900, fontSize:15, color:'#1e293b' }}>Submitted Reports</p>
+        </div>
+
+        {reports.map((r) => {
+          const lessons = Array.isArray(r.lessons) ? r.lessons : JSON.parse(r.lessons || '[]');
+          const presentCount = lessons.filter(l => l.teacherPresent === true).length;
+          const absentCount  = lessons.filter(l => l.teacherPresent === false).length;
+          const isOpen = expanded === r.id;
+
+          return (
+            <div key={r.id} style={{ borderBottom:'1px solid #f8fafc' }}>
+              {/* Row */}
+              <div
+                onClick={() => setExpanded(isOpen ? null : r.id)}
+                style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:12, padding:'14px 22px', cursor:'pointer', transition:'background .15s' }}
+                onMouseEnter={e => e.currentTarget.style.background='#fafbfc'}
+                onMouseLeave={e => e.currentTarget.style.background='transparent'}
+              >
+                <div style={{ flex:1, minWidth:140 }}>
+                  <p style={{ fontWeight:800, color:'#1e293b', fontSize:14 }}>{fmt(r.report_date)}</p>
+                  <p style={{ fontSize:11, color:'#94a3b8', fontWeight:600, marginTop:2 }}>
+                    {new Date(r.submitted_at).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}
+                  </p>
+                </div>
+                <div style={{ display:'flex', gap:8 }}>
+                  <span style={{ background:'#ecfdf5', color:'#10b981', padding:'3px 10px', borderRadius:20, fontSize:11, fontWeight:800 }}>
+                    ✓ {presentCount} Present
+                  </span>
+                  <span style={{ background:'#fff1f2', color:'#ef4444', padding:'3px 10px', borderRadius:20, fontSize:11, fontWeight:800 }}>
+                    ✗ {absentCount} Absent
+                  </span>
+                  <span style={{ background:'#f1f5f9', color:'#64748b', padding:'3px 10px', borderRadius:20, fontSize:11, fontWeight:800 }}>
+                    {lessons.length} lesson{lessons.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <span style={{ color:'#94a3b8', fontSize:12 }}>{isOpen ? '▲' : '▼'}</span>
+              </div>
+
+              {/* Expanded detail */}
+              {isOpen && (
+                <div style={{ background:'#fafbfc', borderTop:'1px solid #f1f5f9' }}>
+                  {/* Column headers */}
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 100px', padding:'8px 22px', borderBottom:'1px solid #f1f5f9' }}>
+                    {['Time Slot','Subject / Teacher','Status'].map(h => (
+                      <p key={h} style={{ fontSize:10, fontWeight:900, textTransform:'uppercase', letterSpacing:'0.1em', color:'#94a3b8' }}>{h}</p>
+                    ))}
+                  </div>
+                  {lessons.map((l, i) => (
+                    <div key={i} style={{ display:'grid', gridTemplateColumns:'1fr 1fr 100px', padding:'11px 22px', borderBottom:'1px solid #f8fafc', alignItems:'center' }}>
+                      <p style={{ fontSize:13, fontWeight:700, color:'#475569' }}>{l.timeSlot}</p>
+                      <div>
+                        <p style={{ fontSize:13, fontWeight:700, color:'#1e293b' }}>{l.subject}</p>
+                        <p style={{ fontSize:11, color:'#94a3b8' }}>{l.teacher}</p>
+                      </div>
+                      <span style={{
+                        display:'inline-block', padding:'3px 10px', borderRadius:20, fontSize:11, fontWeight:800,
+                        background: l.teacherPresent === true ? '#ecfdf5' : l.teacherPresent === false ? '#fff1f2' : '#f1f5f9',
+                        color:      l.teacherPresent === true ? '#10b981' : l.teacherPresent === false ? '#ef4444' : '#94a3b8',
+                      }}>
+                        {l.teacherPresent === true ? '✓ Present' : l.teacherPresent === false ? '✗ Absent' : '— N/A'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
   const [lessons,       setLessons]       = useState([]);
   const [loading,       setLoading]       = useState(true);
   const [teacherStatus, setTeacherStatus] = useState({});
@@ -357,7 +472,7 @@ export default function LessonTracking({ monitorClass = 'Y3A', onBack, onLogout 
 
   const PAGES = {
     lessons: <LessonTrackingPage monitorClass={monitorClass} />,
-    history: <PlaceholderPage title="History" icon={History} />,
+    history: <LessonHistoryPage  monitorClass={monitorClass} />,
   };
 
   const handleNavigate = (id) => {
