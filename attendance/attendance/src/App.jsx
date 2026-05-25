@@ -3,6 +3,7 @@ import Auth from './components/Auth';
 import Dashboard from './components/DashBoard';
 import LessonTracking from './components/LessonTracking';
 import StudentAttendance from './components/StudentsAttendance';
+import ToastContainer from './components/ToastNotification';
 import { api } from './api';
 
 function App() {
@@ -70,12 +71,15 @@ function App() {
   }
 
   return (
-    <Dashboard
-      onLogout={handleLogout}
-      onSectionClick={setActiveSection}
-      userEmail={rep?.email}
-      rep={rep}
-    />
+    <>
+      <ToastContainer />
+      <Dashboard
+        onLogout={handleLogout}
+        onSectionClick={setActiveSection}
+        userEmail={rep?.email}
+        rep={rep}
+      />
+    </>
   );
 }
 

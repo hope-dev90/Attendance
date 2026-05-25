@@ -1,16 +1,24 @@
 import { useEffect, useRef } from 'react';
-import { notify, getSettings } from '../components/NotificationSettings';
+import { getSettings } from '../components/NotificationSettings';
+import { pushToast } from '../components/ToastNotification';
 
 /**
- * Fires scheduled notifications based on current time.
- * Call this once in LessonTracking with the current lesson state.
- *
- * @param {object[]} lessons        - today's lessons array
- * @param {object}   teacherStatus  - { [timeSlot]: true|false|undefined }
- * @param {boolean}  attendanceSubmitted - whether attendance was already submitted today
+ * Fires both in-app toasts AND desktop notifications.
  */
+const fireNotif = async (type, title, body, tag) => {
+  // In-app toast (always)
+  pushToast({ type, title, body });
+
+  // Desktop notification (if permitted)
+  const settings = getSettings();
+  if (!settings.enabled) return;
+  if (Notification.permission === 'default') await Notification.requestPermission();
+  if (Notification.permission !== 'granted') return;
+  new Notification(title, { body, tag, icon: '/favicon.svg', requireInteraction: false });
+};
+
 export default function useNotifications(lessons, teacherStatus, attendanceSubmitted) {
-  const firedRef = useRef(new Set()); // track which notifications already fired this session
+  const firedRef = useRef(new Set());
 
   useEffect(() => {
     const tick = () => {
@@ -18,19 +26,14 @@ export default function useNotifications(lessons, teacherStatus, attendanceSubmi
       if (!settings.enabled) return;
 
       const now   = new Date();
-      const h     = now.getHours();
-      const m     = now.getMinutes();
-      const total = h * 60 + m;
+      const total = now.getHours() * 60 + now.getMinutes();
 
       // 7:55 AM — attendance window reminder
       if (settings.attendanceReminder && !attendanceSubmitted) {
         if (total === 7 * 60 + 55 && !firedRef.current.has('att-reminder')) {
           firedRef.current.add('att-reminder');
-          notify(
-            '⏰ Mark Attendance Soon',
-            'The attendance window opens in 5 minutes (8:00 AM). Get ready!',
-            'att-reminder'
-          );
+          fireNotif('attendance', '⏰ Mark Attendance Soon',
+            'The attendance window opens in 5 minutes (8:00 AM). Get ready!', 'att-reminder');
         }
       }
 
@@ -38,34 +41,27 @@ export default function useNotifications(lessons, teacherStatus, attendanceSubmi
       if (settings.delayedWarning && !attendanceSubmitted) {
         if (total === 8 * 60 + 25 && !firedRef.current.has('delayed-warning')) {
           firedRef.current.add('delayed-warning');
-          notify(
-            '⚠️ Attendance Deadline in 5 Minutes',
-            'Submit attendance before 8:30 AM or it will be marked as delayed.',
-            'delayed-warning'
-          );
+          fireNotif('delayed', '⚠️ Deadline in 5 Minutes',
+            'Submit attendance before 8:30 AM or it will be marked as delayed.', 'delayed-warning');
         }
       }
 
-      // Teacher reminder — fires when a lesson becomes ongoing and teacher not marked
+    
       if (settings.teacherReminder && lessons.length > 0) {
         const ongoing = lessons.find(l => l.ongoing);
         if (ongoing) {
-          const tag = `teacher-${ongoing.timeSlot}`;
+          const tag     = `teacher-${ongoing.timeSlot}`;
           const isMarked = teacherStatus[ongoing.timeSlot] !== undefined;
           if (!isMarked && !firedRef.current.has(tag)) {
             firedRef.current.add(tag);
-            notify(
-              '📋 Mark Teacher Presence',
-              `${ongoing.subject} is now ongoing. Has ${ongoing.teacher} arrived?`,
-              tag
-            );
+            fireNotif('teacher', '📋 Mark Teacher Presence',
+              `${ongoing.subject} is now ongoing. Has ${ongoing.teacher} arrived?`, tag);
           }
         }
       }
     };
 
-    // Check every minute
-    tick(); // run immediately on mount
+    tick();
     const interval = setInterval(tick, 60000);
     return () => clearInterval(interval);
   }, [lessons, teacherStatus, attendanceSubmitted]);

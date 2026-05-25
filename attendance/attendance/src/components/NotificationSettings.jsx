@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-import { Bell, BellOff, X, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Bell, X, Check } from 'lucide-react';
+import { pushToast } from './ToastNotification';
 
 const DEFAULTS = {
   enabled:          true,
@@ -157,7 +158,10 @@ export default function NotificationSettings({ onClose }) {
 
           {/* Test button */}
           <button
-            onClick={() => notify('StaffNet Test', 'Notifications are working correctly!', 'test')}
+            onClick={() => {
+              pushToast({ type: 'success', title: 'Test Notification', body: 'StaffNet notifications are working correctly!' });
+              notify('StaffNet Test', 'Notifications are working correctly!', 'test');
+            }}
             disabled={permission !== 'granted' || !settings.enabled}
             style={{
               marginTop:20, width:'100%', padding:'11px', borderRadius:12, border:'1px solid #e2e8f0',
