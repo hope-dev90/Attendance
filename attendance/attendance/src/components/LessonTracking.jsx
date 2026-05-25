@@ -201,6 +201,8 @@ const LessonHistoryPage = ({ monitorClass }) => {
     </div>
   );
 };
+
+const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
   const [lessons,       setLessons]       = useState([]);
   const [loading,       setLoading]       = useState(true);
   const [teacherStatus, setTeacherStatus] = useState({});
