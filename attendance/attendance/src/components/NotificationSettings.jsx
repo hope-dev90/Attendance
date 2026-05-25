@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Bell, X, Check } from 'lucide-react';
-import { pushToast } from './ToastNotification';
 
 const DEFAULTS = {
   enabled:          true,
@@ -155,22 +154,6 @@ export default function NotificationSettings({ onClose }) {
             onChange={(v) => update('teacherReminder', v)}
             disabled={!settings.enabled || permission !== 'granted'}
           />
-
-          {/* Test button */}
-          <button
-            onClick={() => {
-              pushToast({ type: 'success', title: 'Test Notification', body: 'StaffNet notifications are working correctly!' });
-              notify('StaffNet Test', 'Notifications are working correctly!', 'test');
-            }}
-            disabled={permission !== 'granted' || !settings.enabled}
-            style={{
-              marginTop:20, width:'100%', padding:'11px', borderRadius:12, border:'1px solid #e2e8f0',
-              background:'#f8fafc', color:'#475569', fontWeight:700, fontSize:13, cursor:'pointer',
-              opacity: permission !== 'granted' || !settings.enabled ? .5 : 1,
-            }}
-          >
-            Send Test Notification
-          </button>
         </div>
       </div>
     </div>

@@ -6,50 +6,15 @@ import { saveNotification } from '../hooks/useNotificationDB';
 let _addToast = null;
 export const pushToast = (notif) => { if (_addToast) _addToast(notif); };
 
-/* ── Type config — Slack-style dark surface ── */
+const DURATION = 3000; // 3 seconds for all toasts
+
 const TYPE_CONFIG = {
-  attendance: {
-    accent:   '#4CAF82',
-    iconBg:   '#1e3a2f',
-    icon:     <Clock size={17} />,
-    source:   'StaffNet · Attendance',
-    duration: 6000,
-  },
-  delayed: {
-    accent:   '#E8A838',
-    iconBg:   '#3a2e1a',
-    icon:     <AlertTriangle size={17} />,
-    source:   'StaffNet · Warning',
-    duration: 8000,
-  },
-  teacher: {
-    accent:   '#5B9CF6',
-    iconBg:   '#1a2a3f',
-    icon:     <BookOpen size={17} />,
-    source:   'StaffNet · Lesson',
-    duration: 7000,
-  },
-  success: {
-    accent:   '#4CAF82',
-    iconBg:   '#1e3a2f',
-    icon:     <CheckCircle size={17} />,
-    source:   'StaffNet · Done',
-    duration: 4000,
-  },
-  error: {
-    accent:   '#E05353',
-    iconBg:   '#3a1e1e',
-    icon:     <Bell size={17} />,
-    source:   'StaffNet · Error',
-    duration: 6000,
-  },
-  default: {
-    accent:   '#5B9CF6',
-    iconBg:   '#1a2a3f',
-    icon:     <Bell size={17} />,
-    source:   'StaffNet',
-    duration: 6000,
-  },
+  attendance: { accent:'#4CAF82', iconBg:'#1e3a2f', icon:<Clock size={17} />,        source:'StaffNet · Attendance', duration:DURATION },
+  delayed:    { accent:'#E8A838', iconBg:'#3a2e1a', icon:<AlertTriangle size={17} />, source:'StaffNet · Warning',    duration:DURATION },
+  teacher:    { accent:'#5B9CF6', iconBg:'#1a2a3f', icon:<BookOpen size={17} />,      source:'StaffNet · Lesson',     duration:DURATION },
+  success:    { accent:'#4CAF82', iconBg:'#1e3a2f', icon:<CheckCircle size={17} />,   source:'StaffNet · Done',       duration:DURATION },
+  error:      { accent:'#E05353', iconBg:'#3a1e1e', icon:<Bell size={17} />,          source:'StaffNet · Error',      duration:DURATION },
+  default:    { accent:'#5B9CF6', iconBg:'#1a2a3f', icon:<Bell size={17} />,          source:'StaffNet',              duration:DURATION },
 };
 
 /* ── Single toast card ── */
