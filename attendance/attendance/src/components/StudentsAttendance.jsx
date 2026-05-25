@@ -82,7 +82,7 @@ const Sidebar = ({ activePage, onNavigate, onBack, onLogout, mobileOpen, onMobil
         <div>
           <h1>StaffNet</h1>
           <p>Attendance Section</p>
-          <p>Beyond 8:30 a.m submission will be delayed</p>
+        
         </div>
         <button onClick={onMobileClose} style={{ marginLeft:"auto", background:"none", border:"none", color:"#94a3b8", cursor:"pointer", display:"none" }} className="sn-sa-close"><X size={18} /></button>
       </div>
@@ -288,6 +288,9 @@ const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
                 <h1 style={{ fontSize:28, fontWeight:900, color:"#1e293b", letterSpacing:"-.5px" }}>Attendance</h1>
                 <p style={{ color:"#94a3b8", fontWeight:600, marginTop:2, fontSize:14 }}>
                   {todayLabel()} — <span style={{ color:NAVY }}>Class {monitorClass}</span>
+                </p>
+                <p style={{ color:"#94a3b8", fontWeight:600, marginTop:2, fontSize:14 }}>
+                  Beyond 8:30 am , submission will be delayed.
                 </p>
               </div>
               <div style={{ display:"flex", gap:10 }}>

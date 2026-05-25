@@ -106,14 +106,17 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
   const currentLesson = lessons.find(l => l.ongoing);
 
   const handleSubmit = async () => {
+    if (!currentLesson) return;
     setSubmitting(true); setMessage('');
     try {
       await api.submitLessonReport({
         report_date: todayISO,
-        lessons: lessons.map(l => ({
-          timeSlot: l.timeSlot, subject: l.subject, teacher: l.teacher,
-          teacherPresent: teacherStatus[l.timeSlot] ?? null,
-        })),
+        lessons: [{
+          timeSlot:       currentLesson.timeSlot,
+          subject:        currentLesson.subject,
+          teacher:        currentLesson.teacher,
+          teacherPresent: teacherStatus[currentLesson.timeSlot] ?? null,
+        }],
       });
       setSubmitted(true);
     } catch (err) {
@@ -216,6 +219,7 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
           </div>
           {lessons.map((lesson) => {
             const status = teacherStatus[lesson.timeSlot];
+            const isMarked = status !== undefined;
             return (
               <div key={lesson.timeSlot} className="sn-table-row" style={{ background:lesson.ongoing ? '#f0fdf4' : undefined }}>
                 <div style={{ width:38, height:38, borderRadius:10, flexShrink:0, background:lesson.ongoing ? NAVY : '#f1f5f9', color:lesson.ongoing ? '#fff' : '#94a3b8', display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -226,16 +230,37 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
                   <p style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>{lesson.teacher} · {lesson.timeSlot}</p>
                 </div>
                 {lesson.ongoing && <span className="sn-badge sn-badge-green">Ongoing</span>}
-                <div className="sn-toggle-group">
-                  <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, true)}
-                    style={{ background:status===true ? '#10b981':'transparent', color:status===true ? '#fff':'#94a3b8', boxShadow:status===true ? '0 2px 6px rgba(16,185,129,.25)':'none' }}>
-                    ✓ Present
-                  </button>
-                  <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, false)}
-                    style={{ background:status===false ? '#ef4444':'transparent', color:status===false ? '#fff':'#94a3b8', boxShadow:status===false ? '0 2px 6px rgba(239,68,68,.2)':'none' }}>
-                    ✗ Absent
-                  </button>
-                </div>
+                {lesson.ongoing ? (
+                  <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
+                    <div className="sn-toggle-group">
+                      <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, true)}
+                        style={{ background:status===true ? '#10b981':'transparent', color:status===true ? '#fff':'#94a3b8', boxShadow:status===true ? '0 2px 6px rgba(16,185,129,.25)':'none' }}>
+                        ✓ Present
+                      </button>
+                      <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, false)}
+                        style={{ background:status===false ? '#ef4444':'transparent', color:status===false ? '#fff':'#94a3b8', boxShadow:status===false ? '0 2px 6px rgba(239,68,68,.2)':'none' }}>
+                        ✗ Absent
+                      </button>
+                    </div>
+                    <button className="sn-primary-btn" onClick={handleSubmit}
+                      disabled={submitting || !isMarked}
+                      style={{ padding:'8px 18px', fontSize:12, textTransform:'uppercase', letterSpacing:'0.06em' }}>
+                      {submitting ? <span className="sn-spinner" /> : <Send size={14} />}
+                      {submitting ? 'Sending…' : 'Submit'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="sn-toggle-group">
+                    <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, true)}
+                      style={{ background:status===true ? '#10b981':'transparent', color:status===true ? '#fff':'#94a3b8', boxShadow:status===true ? '0 2px 6px rgba(16,185,129,.25)':'none' }}>
+                      ✓ Present
+                    </button>
+                    <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, false)}
+                      style={{ background:status===false ? '#ef4444':'transparent', color:status===false ? '#fff':'#94a3b8', boxShadow:status===false ? '0 2px 6px rgba(239,68,68,.2)':'none' }}>
+                      ✗ Absent
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -250,25 +275,7 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
         </div>
       )}
 
-      {lessons.length > 0 && (
-        <div className="sn-card" style={{ padding:'20px 24px' }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
-            <div>
-              <p style={{ fontWeight:900, color:'#1e293b', fontSize:15 }}>End-of-Day Report</p>
-              <p style={{ fontSize:13, color:'#94a3b8', marginTop:3 }}>
-                {markedCount} of {lessons.length} lessons marked
-                {!allMarked && <span style={{ color:'#f59e0b', marginLeft:8 }}>— mark all before submitting</span>}
-              </p>
-            </div>
-            <button className="sn-primary-btn" onClick={handleSubmit} disabled={submitting || !allMarked}
-              style={{ padding:'12px 28px', fontSize:13, textTransform:'uppercase', letterSpacing:'0.07em' }}>
-              {submitting ? <span className="sn-spinner" /> : <Send size={16} />}
-              {submitting ? 'Sending…' : 'Send to StaffNet'}
-            </button>
-          </div>
-          {message && <p style={{ marginTop:12, fontSize:13, color:'#ef4444', fontWeight:700 }}>{message}</p>}
-        </div>
-      )}
+      {message && <p style={{ marginTop:12, fontSize:13, color:'#ef4444', fontWeight:700 }}>{message}</p>}
     </div>
   );
 };
