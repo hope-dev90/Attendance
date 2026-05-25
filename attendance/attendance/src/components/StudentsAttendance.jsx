@@ -193,7 +193,12 @@ const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
       });
       setIsSubmitted(true);
     } catch (err) {
-      setApiError(err.message);
+      const code = err.response?.data?.code || (err.message?.includes('409') ? 'ALREADY_SUBMITTED' : null);
+      if (err.message?.includes('already been submitted') || code === 'ALREADY_SUBMITTED') {
+        setApiError('ALREADY_SUBMITTED');
+      } else {
+        setApiError(err.message);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -318,7 +323,7 @@ const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
 
             {showNotifSettings && <NotificationSettings onClose={() => setShowNotifSettings(false)} />}
 
-            {apiError && (
+            {apiError && apiError !== 'ALREADY_SUBMITTED' && (
               <div style={{ background:"#fff5f5", border:"1px solid #fecaca", color:"#dc2626", padding:"12px 18px", borderRadius:12, marginBottom:20, fontWeight:700, fontSize:13 }}>
                 {apiError}
               </div>
@@ -425,11 +430,20 @@ const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
                 </div>
 
                 {/* Submit */}
-                <div style={{ display:"flex", justifyContent:"flex-end", marginTop:24 }}>
+                <div style={{ display:"flex", justifyContent:"flex-end", marginTop:24, alignItems:"center", gap:14 }}>
+                  {apiError === 'ALREADY_SUBMITTED' && (
+                    <div style={{ display:"flex", alignItems:"center", gap:8, background:"#f0fdf4", border:"1px solid #bbf7d0", borderRadius:10, padding:"9px 14px" }}>
+                      <span style={{ fontSize:16 }}>✅</span>
+                      <div>
+                        <p style={{ fontSize:13, fontWeight:700, color:"#15803d", lineHeight:1.2 }}>Attendance already submitted</p>
+                        <p style={{ fontSize:11, color:"#16a34a", marginTop:1 }}>Today's record is saved. See you tomorrow!</p>
+                      </div>
+                    </div>
+                  )}
                   <button className="submit-btn" onClick={handleSubmit}
-                    disabled={isSubmitting || isLoading || students.length === 0}>
+                    disabled={isSubmitting || isLoading || students.length === 0 || apiError === 'ALREADY_SUBMITTED'}>
                     {isSubmitting ? <div className="loader" /> : <Send size={16} />}
-                    {isSubmitting ? "Submitting…" : "Submit Attendance"}
+                    {isSubmitting ? "Submitting…" : apiError === 'ALREADY_SUBMITTED' ? "Submitted ✓" : "Submit Attendance"}
                   </button>
                 </div>
               </>

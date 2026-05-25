@@ -18,13 +18,10 @@ const generateTokens = (rep) => {
     class_id: rep.class_id,
   };
 
-  const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '155m',
-  });
+  // Long-lived tokens — no expiry to keep things simple for users
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET);
 
-  const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
-  });
+  const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET);
 
   return { accessToken, refreshToken };
 };
