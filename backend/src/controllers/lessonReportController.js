@@ -26,7 +26,7 @@ const submitLessonReport = async (req, res) => {
     );
     const meta = metaResult.rows[0];
 
-    // Save to DB
+
     await pool.query(
       `INSERT INTO lesson_reports (class_id, rep_id, report_date, lessons)
        VALUES ($1, $2, $3, $4)
@@ -61,7 +61,7 @@ const submitLessonReport = async (req, res) => {
   }
 };
 
-// GET /api/lesson-reports — get reports for rep's class
+
 const getLessonReports = async (req, res) => {
   const classId = req.rep.classId || req.rep.class_id;
   try {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import {
   User, CheckCircle, AlertCircle, Calendar,
   ArrowLeft, LayoutDashboard, Clock, Send, CheckCircle2,
@@ -85,7 +85,7 @@ const PlaceholderPage = ({ title, icon: Icon }) => (
   </div>
 );
 
-/* ── Lesson History Page ── */
+/* â”€â”€ Lesson History Page â”€â”€ */
 const LessonHistoryPage = ({ monitorClass }) => {
   const [reports,  setReports]  = useState([]);
   const [loading,  setLoading]  = useState(true);
@@ -123,7 +123,7 @@ const LessonHistoryPage = ({ monitorClass }) => {
       <div className="sn-page-header">
         <div>
           <h1 className="sn-page-title">Lesson History</h1>
-          <p className="sn-page-sub">Class {monitorClass} — {reports.length} report{reports.length !== 1 ? 's' : ''}</p>
+          <p className="sn-page-sub">Class {monitorClass} â€” {reports.length} report{reports.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
 
@@ -155,16 +155,16 @@ const LessonHistoryPage = ({ monitorClass }) => {
                 </div>
                 <div style={{ display:'flex', gap:8 }}>
                   <span style={{ background:'#ecfdf5', color:'#10b981', padding:'3px 10px', borderRadius:20, fontSize:11, fontWeight:800 }}>
-                    ✓ {presentCount} Present
+                    âœ“ {presentCount} Present
                   </span>
                   <span style={{ background:'#fff1f2', color:'#ef4444', padding:'3px 10px', borderRadius:20, fontSize:11, fontWeight:800 }}>
-                    ✗ {absentCount} Absent
+                    âœ— {absentCount} Absent
                   </span>
                   <span style={{ background:'#f1f5f9', color:'#64748b', padding:'3px 10px', borderRadius:20, fontSize:11, fontWeight:800 }}>
                     {lessons.length} lesson{lessons.length !== 1 ? 's' : ''}
                   </span>
                 </div>
-                <span style={{ color:'#94a3b8', fontSize:12 }}>{isOpen ? '▲' : '▼'}</span>
+                <span style={{ color:'#94a3b8', fontSize:12 }}>{isOpen ? 'â–²' : 'â–¼'}</span>
               </div>
 
               {/* Expanded detail */}
@@ -188,7 +188,7 @@ const LessonHistoryPage = ({ monitorClass }) => {
                         background: l.teacherPresent === true ? '#ecfdf5' : l.teacherPresent === false ? '#fff1f2' : '#f1f5f9',
                         color:      l.teacherPresent === true ? '#10b981' : l.teacherPresent === false ? '#ef4444' : '#94a3b8',
                       }}>
-                        {l.teacherPresent === true ? '✓ Present' : l.teacherPresent === false ? '✗ Absent' : '— N/A'}
+                        {l.teacherPresent === true ? 'âœ“ Present' : l.teacherPresent === false ? 'âœ— Absent' : 'â€” N/A'}
                       </span>
                     </div>
                   ))}
@@ -206,9 +206,9 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
   const [lessons,       setLessons]       = useState([]);
   const [loading,       setLoading]       = useState(true);
   const [teacherStatus, setTeacherStatus] = useState({});
-  const [lockedSlots,   setLockedSlots]   = useState(new Set()); // once marked, locked
+  const [lockedSlots,   setLockedSlots]   = useState(new Set());
   const [submitting,    setSubmitting]    = useState(false);
-  const [submittedSlots,setSubmittedSlots]= useState(new Set()); // track submitted lessons
+  const [submittedSlots,setSubmittedSlots]= useState(new Set());
   const [submitted,     setSubmitted]     = useState(false);
   const [message,       setMessage]       = useState('');
   const [showNotifSettings, setShowNotifSettings] = useState(false);
@@ -222,8 +222,33 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
     return () => clearInterval(t);
   }, [monitorClass]);
 
+  // On mount â€” check if today's lesson report already exists and lock those slots
+  useEffect(() => {
+    api.getLessonReports()
+      .then((reports) => {
+        const todayReport = reports.find(r => r.report_date?.startsWith(todayISO));
+        if (todayReport) {
+          const lessons = Array.isArray(todayReport.lessons)
+            ? todayReport.lessons
+            : JSON.parse(todayReport.lessons || '[]');
+          const statusMap = {};
+          const locked    = new Set();
+          const submitted = new Set();
+          lessons.forEach(l => {
+            statusMap[l.timeSlot] = l.teacherPresent;
+            locked.add(l.timeSlot);
+            submitted.add(l.timeSlot);
+          });
+          setTeacherStatus(statusMap);
+          setLockedSlots(locked);
+          setSubmittedSlots(submitted);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const mark = (slot, present) => {
-    // Once marked, cannot change — lock it
+    // Once marked, cannot change â€” lock it
     if (lockedSlots.has(slot)) return;
     setTeacherStatus(prev => ({ ...prev, [slot]: present }));
     setLockedSlots(prev => new Set([...prev, slot]));
@@ -269,7 +294,7 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
       </div>
       <h2 style={{ fontSize:26, fontWeight:900, color:'#1e293b', marginBottom:6 }}>Report Submitted!</h2>
       <p style={{ color:'#94a3b8', marginBottom:6 }}>
-        {currentLesson.subject} — {currentLesson.teacher} marked as{' '}
+        {currentLesson.subject} â€” {currentLesson.teacher} marked as{' '}
         <strong style={{ color: teacherStatus[currentLesson.timeSlot] ? '#10b981' : '#ef4444' }}>
           {teacherStatus[currentLesson.timeSlot] ? 'Present' : 'Absent'}
         </strong>
@@ -290,7 +315,7 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
             <span style={{ fontSize:10, fontWeight:900, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.25em' }}>Representative Portal</span>
           </div>
           <h1 className="sn-page-title">Lesson Tracking</h1>
-          <p className="sn-page-sub">{todayFull} — Class {monitorClass}</p>
+          <p className="sn-page-sub">{todayFull} â€” Class {monitorClass}</p>
         </div>
         <button
           onClick={() => setShowNotifSettings(true)}
@@ -322,7 +347,7 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
             <div>
               <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
                 <div className="sn-ping-wrap"><div className="sn-ping-ring" /><div className="sn-ping-dot" /></div>
-                <span style={{ fontSize:10, fontWeight:900, color:'#10b981', textTransform:'uppercase', letterSpacing:'0.2em' }}>Ongoing Now · {monitorClass}</span>
+                <span style={{ fontSize:10, fontWeight:900, color:'#10b981', textTransform:'uppercase', letterSpacing:'0.2em' }}>Ongoing Now Â· {monitorClass}</span>
               </div>
               <p style={{ fontSize:32, fontWeight:900, color:'#1e293b', letterSpacing:'-.5px', margin:'6px 0 8px' }}>{currentLesson.subject}</p>
               <span className="sn-badge sn-badge-navy">{currentLesson.timeSlot}</span>
@@ -376,7 +401,7 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
         <div className="sn-card" style={{ overflow:'hidden', marginBottom:22 }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 22px', borderBottom:'1px solid #f1f5f9' }}>
             <p style={{ fontWeight:900, fontSize:17, color:'#1e293b' }}>Today's Schedule</p>
-            <span className="sn-badge sn-badge-navy">{lessons.length} lessons · {dayName}</span>
+            <span className="sn-badge sn-badge-navy">{lessons.length} lessons Â· {dayName}</span>
           </div>
           {lessons.map((lesson) => {
             const status = teacherStatus[lesson.timeSlot];
@@ -388,48 +413,57 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
                 </div>
                 <div style={{ flex:1, minWidth:120 }}>
                   <p style={{ fontWeight:800, color:'#1e293b', fontSize:14 }}>{lesson.subject}</p>
-                  <p style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>{lesson.teacher} · {lesson.timeSlot}</p>
+                  <p style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>{lesson.teacher} Â· {lesson.timeSlot}</p>
                 </div>
                 {lesson.ongoing && <span className="sn-badge sn-badge-green">Ongoing</span>}
                 {lesson.ongoing ? (
                   <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
-                    <div className="sn-toggle-group">
-                      <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, true)}
-                        disabled={lockedSlots.has(lesson.timeSlot)}
-                        style={{
-                          background:    status===true ? '#10b981':'transparent',
-                          color:         status===true ? '#fff':'#94a3b8',
-                          boxShadow:     status===true ? '0 2px 6px rgba(16,185,129,.25)':'none',
-                          cursor:        lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
-                          opacity:       lockedSlots.has(lesson.timeSlot) && status!==true ? 0.35 : 1,
-                          pointerEvents: lockedSlots.has(lesson.timeSlot) ? 'none' : 'auto',
-                        }}>
-                        ✓ Present
-                      </button>
-                      <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, false)}
-                        disabled={lockedSlots.has(lesson.timeSlot)}
-                        style={{
-                          background:    status===false ? '#ef4444':'transparent',
-                          color:         status===false ? '#fff':'#94a3b8',
-                          boxShadow:     status===false ? '0 2px 6px rgba(239,68,68,.2)':'none',
-                          cursor:        lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
-                          opacity:       lockedSlots.has(lesson.timeSlot) && status!==false ? 0.35 : 1,
-                          pointerEvents: lockedSlots.has(lesson.timeSlot) ? 'none' : 'auto',
-                        }}>
-                        ✗ Absent
-                      </button>
-                    </div>
                     {submittedSlots.has(lesson.timeSlot) ? (
-                      <span style={{ fontSize:12, fontWeight:700, color:'#10b981', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:8, padding:'6px 12px' }}>
-                        ✓ Submitted
-                      </span>
+                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <span style={{
+                          background: teacherStatus[lesson.timeSlot] === true ? '#ecfdf5' : '#fff1f2',
+                          color:      teacherStatus[lesson.timeSlot] === true ? '#10b981' : '#ef4444',
+                          padding:'4px 12px', borderRadius:20, fontSize:11, fontWeight:800,
+                        }}>
+                          {teacherStatus[lesson.timeSlot] === true ? '✓ Present' : '✗ Absent'}
+                        </span>
+                        <span style={{ fontSize:10, color:'#94a3b8', fontWeight:600 }}>Already submitted</span>
+                      </div>
                     ) : (
-                      <button className="sn-primary-btn" onClick={handleSubmit}
-                        disabled={submitting || status === undefined}
-                        style={{ padding:'8px 18px', fontSize:12, textTransform:'uppercase', letterSpacing:'0.06em' }}>
-                        {submitting ? <span className="sn-spinner" /> : <Send size={14} />}
-                        {submitting ? 'Sending…' : 'Submit'}
-                      </button>
+                      <>
+                        <div className="sn-toggle-group">
+                          <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, true)}
+                            disabled={lockedSlots.has(lesson.timeSlot)}
+                            style={{
+                              background:    status===true ? '#10b981':'transparent',
+                              color:         status===true ? '#fff':'#94a3b8',
+                              boxShadow:     status===true ? '0 2px 6px rgba(16,185,129,.25)':'none',
+                              cursor:        lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
+                              opacity:       lockedSlots.has(lesson.timeSlot) && status!==true ? 0.35 : 1,
+                              pointerEvents: lockedSlots.has(lesson.timeSlot) ? 'none' : 'auto',
+                            }}>
+                            ✓ Present
+                          </button>
+                          <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, false)}
+                            disabled={lockedSlots.has(lesson.timeSlot)}
+                            style={{
+                              background:    status===false ? '#ef4444':'transparent',
+                              color:         status===false ? '#fff':'#94a3b8',
+                              boxShadow:     status===false ? '0 2px 6px rgba(239,68,68,.2)':'none',
+                              cursor:        lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
+                              opacity:       lockedSlots.has(lesson.timeSlot) && status!==false ? 0.35 : 1,
+                              pointerEvents: lockedSlots.has(lesson.timeSlot) ? 'none' : 'auto',
+                            }}>
+                            ✗ Absent
+                          </button>
+                        </div>
+                        <button className="sn-primary-btn" onClick={handleSubmit}
+                          disabled={submitting || status === undefined}
+                          style={{ padding:'8px 18px', fontSize:12, textTransform:'uppercase', letterSpacing:'0.06em' }}>
+                          {submitting ? <span className="sn-spinner" /> : <Send size={14} />}
+                          {submitting ? 'Sending…' : 'Submit'}
+                        </button>
+                      </>
                     )}
                   </div>
                 ) : (
