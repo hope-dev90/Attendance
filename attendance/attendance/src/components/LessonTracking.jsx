@@ -267,22 +267,24 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
                       <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, true)}
                         disabled={lockedSlots.has(lesson.timeSlot)}
                         style={{
-                          background: status===true ? '#10b981':'transparent',
-                          color:      status===true ? '#fff':'#94a3b8',
-                          boxShadow:  status===true ? '0 2px 6px rgba(16,185,129,.25)':'none',
-                          cursor:     lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
-                          opacity:    lockedSlots.has(lesson.timeSlot) && status!==true ? 0.35 : 1,
+                          background:    status===true ? '#10b981':'transparent',
+                          color:         status===true ? '#fff':'#94a3b8',
+                          boxShadow:     status===true ? '0 2px 6px rgba(16,185,129,.25)':'none',
+                          cursor:        lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
+                          opacity:       lockedSlots.has(lesson.timeSlot) && status!==true ? 0.35 : 1,
+                          pointerEvents: lockedSlots.has(lesson.timeSlot) ? 'none' : 'auto',
                         }}>
                         ✓ Present
                       </button>
                       <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, false)}
                         disabled={lockedSlots.has(lesson.timeSlot)}
                         style={{
-                          background: status===false ? '#ef4444':'transparent',
-                          color:      status===false ? '#fff':'#94a3b8',
-                          boxShadow:  status===false ? '0 2px 6px rgba(239,68,68,.2)':'none',
-                          cursor:     lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
-                          opacity:    lockedSlots.has(lesson.timeSlot) && status!==false ? 0.35 : 1,
+                          background:    status===false ? '#ef4444':'transparent',
+                          color:         status===false ? '#fff':'#94a3b8',
+                          boxShadow:     status===false ? '0 2px 6px rgba(239,68,68,.2)':'none',
+                          cursor:        lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
+                          opacity:       lockedSlots.has(lesson.timeSlot) && status!==false ? 0.35 : 1,
+                          pointerEvents: lockedSlots.has(lesson.timeSlot) ? 'none' : 'auto',
                         }}>
                         ✗ Absent
                       </button>
@@ -302,12 +304,30 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
                   </div>
                 ) : (
                   <div className="sn-toggle-group">
-                    <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, true)}
-                      style={{ background:status===true ? '#10b981':'transparent', color:status===true ? '#fff':'#94a3b8', boxShadow:status===true ? '0 2px 6px rgba(16,185,129,.25)':'none' }}>
+                    <button className="sn-toggle-btn"
+                      onClick={() => mark(lesson.timeSlot, true)}
+                      disabled={lockedSlots.has(lesson.timeSlot)}
+                      style={{
+                        background:    status===true ? '#10b981':'transparent',
+                        color:         status===true ? '#fff':'#94a3b8',
+                        boxShadow:     status===true ? '0 2px 6px rgba(16,185,129,.25)':'none',
+                        cursor:        lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
+                        opacity:       lockedSlots.has(lesson.timeSlot) && status!==true ? 0.35 : 1,
+                        pointerEvents: lockedSlots.has(lesson.timeSlot) ? 'none' : 'auto',
+                      }}>
                       ✓ Present
                     </button>
-                    <button className="sn-toggle-btn" onClick={() => mark(lesson.timeSlot, false)}
-                      style={{ background:status===false ? '#ef4444':'transparent', color:status===false ? '#fff':'#94a3b8', boxShadow:status===false ? '0 2px 6px rgba(239,68,68,.2)':'none' }}>
+                    <button className="sn-toggle-btn"
+                      onClick={() => mark(lesson.timeSlot, false)}
+                      disabled={lockedSlots.has(lesson.timeSlot)}
+                      style={{
+                        background:    status===false ? '#ef4444':'transparent',
+                        color:         status===false ? '#fff':'#94a3b8',
+                        boxShadow:     status===false ? '0 2px 6px rgba(239,68,68,.2)':'none',
+                        cursor:        lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
+                        opacity:       lockedSlots.has(lesson.timeSlot) && status!==false ? 0.35 : 1,
+                        pointerEvents: lockedSlots.has(lesson.timeSlot) ? 'none' : 'auto',
+                      }}>
                       ✗ Absent
                     </button>
                   </div>
