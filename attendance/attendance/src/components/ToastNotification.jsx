@@ -2,45 +2,53 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Bell, X, Clock, AlertTriangle, BookOpen, CheckCircle, ChevronRight } from 'lucide-react';
 import { saveNotification } from '../hooks/useNotificationDB';
 
-/* ── Toast store (singleton outside React) ── */
+/* ── Toast store (singleton — unchanged) ── */
 let _addToast = null;
 export const pushToast = (notif) => { if (_addToast) _addToast(notif); };
 
+/* ── Type config — Slack-style dark surface ── */
 const TYPE_CONFIG = {
   attendance: {
-    icon:    <Clock size={18} />,
-    accent:  '#2e5a88',
-    bg:      '#eff6ff',
-    border:  '#bfdbfe',
-    label:   'Attendance',
+    accent:   '#4CAF82',
+    iconBg:   '#1e3a2f',
+    icon:     <Clock size={17} />,
+    source:   'StaffNet · Attendance',
+    duration: 6000,
   },
   delayed: {
-    icon:    <AlertTriangle size={18} />,
-    accent:  '#d97706',
-    bg:      '#fffbeb',
-    border:  '#fde68a',
-    label:   'Warning',
+    accent:   '#E8A838',
+    iconBg:   '#3a2e1a',
+    icon:     <AlertTriangle size={17} />,
+    source:   'StaffNet · Warning',
+    duration: 8000,
   },
   teacher: {
-    icon:    <BookOpen size={18} />,
-    accent:  '#7c3aed',
-    bg:      '#f5f3ff',
-    border:  '#ddd6fe',
-    label:   'Lesson',
+    accent:   '#5B9CF6',
+    iconBg:   '#1a2a3f',
+    icon:     <BookOpen size={17} />,
+    source:   'StaffNet · Lesson',
+    duration: 7000,
   },
   success: {
-    icon:    <CheckCircle size={18} />,
-    accent:  '#059669',
-    bg:      '#ecfdf5',
-    border:  '#a7f3d0',
-    label:   'Done',
+    accent:   '#4CAF82',
+    iconBg:   '#1e3a2f',
+    icon:     <CheckCircle size={17} />,
+    source:   'StaffNet · Done',
+    duration: 4000,
+  },
+  error: {
+    accent:   '#E05353',
+    iconBg:   '#3a1e1e',
+    icon:     <Bell size={17} />,
+    source:   'StaffNet · Error',
+    duration: 6000,
   },
   default: {
-    icon:    <Bell size={18} />,
-    accent:  '#2e5a88',
-    bg:      '#f8fafc',
-    border:  '#e2e8f0',
-    label:   'Notice',
+    accent:   '#5B9CF6',
+    iconBg:   '#1a2a3f',
+    icon:     <Bell size={17} />,
+    source:   'StaffNet',
+    duration: 6000,
   },
 };
 
@@ -51,106 +59,176 @@ const Toast = ({ id, type = 'default', title, body, onDismiss, action }) => {
 
   const dismiss = useCallback(() => {
     setOut(true);
-    setTimeout(() => onDismiss(id), 320);
+    setTimeout(() => onDismiss(id), 300);
   }, [id, onDismiss]);
 
-  // Auto-dismiss after 6 s
   useEffect(() => {
-    const t = setTimeout(dismiss, 6000);
+    const t = setTimeout(dismiss, cfg.duration);
     return () => clearTimeout(t);
-  }, [dismiss]);
+  }, [dismiss, cfg.duration]);
 
   return (
     <div style={{
-      display: 'flex', gap: 12, alignItems: 'flex-start',
-      background: cfg.bg,
-      border: `1px solid ${cfg.border}`,
-      borderLeft: `4px solid ${cfg.accent}`,
-      borderRadius: 14,
-      padding: '14px 14px 14px 16px',
-      boxShadow: '0 8px 32px rgba(0,0,0,.10)',
-      fontFamily: "'DM Sans', sans-serif",
-      width: 340,
-      transform: out ? 'translateX(110%)' : 'translateX(0)',
-      opacity: out ? 0 : 1,
-      transition: 'transform .32s cubic-bezier(.4,0,.2,1), opacity .32s ease',
-      animation: 'snToastIn .35s cubic-bezier(.4,0,.2,1)',
-      position: 'relative',
+      position:     'relative',
+      width:        360,
+      background:   '#1a1d21',
+      borderRadius: 10,
+      borderLeft:   `3px solid ${cfg.accent}`,
+      display:      'flex',
+      alignItems:   'flex-start',
+      gap:          12,
+      padding:      '13px 14px 16px 14px',
+      fontFamily:   "'DM Sans', system-ui, sans-serif",
+      overflow:     'hidden',
+      transform:    out ? 'translateX(110%)' : 'translateX(0)',
+      opacity:      out ? 0 : 1,
+      transition:   out
+        ? 'transform .3s ease, opacity .3s ease'
+        : 'transform .25s cubic-bezier(.16,1,.3,1), opacity .25s ease',
+      animation:    out ? 'none' : 'snSlackIn .25s cubic-bezier(.16,1,.3,1)',
     }}>
-      {/* Icon */}
+
+      {/* Icon block */}
       <div style={{
-        width: 34, height: 34, borderRadius: 10, background: cfg.accent,
-        color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        flexShrink: 0, marginTop: 1,
+        width:        36,
+        height:       36,
+        borderRadius: 8,
+        background:   cfg.iconBg,
+        color:        cfg.accent,
+        display:      'flex',
+        alignItems:   'center',
+        justifyContent: 'center',
+        flexShrink:   0,
+        marginTop:    1,
       }}>
         {cfg.icon}
       </div>
 
       {/* Content */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-          <span style={{ fontSize: 9, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.12em', color: cfg.accent }}>
-            {cfg.label}
-          </span>
-          <span style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>
-            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </span>
-        </div>
-        <p style={{ fontSize: 13, fontWeight: 800, color: '#1e293b', lineHeight: 1.3, marginBottom: body ? 4 : 0 }}>
+        {/* Source line */}
+        <p style={{
+          fontSize:      10,
+          fontWeight:    700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.6px',
+          color:         '#616061',
+          marginBottom:  3,
+        }}>
+          {cfg.source}
+        </p>
+
+        {/* Title */}
+        <p style={{
+          fontSize:     13,
+          fontWeight:   700,
+          color:        '#ffffff',
+          lineHeight:   1.35,
+          marginBottom: body ? 3 : 0,
+        }}>
           {title}
         </p>
+
+        {/* Message */}
         {body && (
-          <p style={{ fontSize: 12, color: '#64748b', lineHeight: 1.4 }}>{body}</p>
+          <p style={{
+            fontSize:     12,
+            color:        '#8d8d8d',
+            lineHeight:   1.4,
+            whiteSpace:   'nowrap',
+            overflow:     'hidden',
+            textOverflow: 'ellipsis',
+          }}>
+            {body}
+          </p>
         )}
+
+        {/* Action buttons */}
         {action && (
-          <button
-            onClick={() => { action.onClick(); dismiss(); }}
-            style={{
-              marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 4,
-              fontSize: 11, fontWeight: 800, color: cfg.accent, background: 'none',
-              border: 'none', cursor: 'pointer', padding: 0, textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-            }}
-          >
-            {action.label} <ChevronRight size={12} />
-          </button>
+          <div style={{ display: 'flex', gap: 6, marginTop: 9 }}>
+            <button
+              onClick={() => { action.onClick(); dismiss(); }}
+              style={{
+                background:   '#2d6af0',
+                color:        '#fff',
+                border:       'none',
+                borderRadius: 5,
+                padding:      '5px 10px',
+                fontSize:     11,
+                fontWeight:   700,
+                cursor:       'pointer',
+                fontFamily:   'inherit',
+              }}
+            >
+              {action.label}
+            </button>
+            <button
+              onClick={dismiss}
+              style={{
+                background:   '#2e2f32',
+                color:        '#8d8d8d',
+                border:       'none',
+                borderRadius: 5,
+                padding:      '5px 10px',
+                fontSize:     11,
+                fontWeight:   700,
+                cursor:       'pointer',
+                fontFamily:   'inherit',
+              }}
+            >
+              Dismiss
+            </button>
+          </div>
         )}
       </div>
 
-      {/* Dismiss */}
+      {/* Close button */}
       <button
         onClick={dismiss}
         style={{
-          background: 'none', border: 'none', cursor: 'pointer',
-          color: '#94a3b8', padding: 2, flexShrink: 0, marginTop: -2,
+          background:  'none',
+          border:      'none',
+          cursor:      'pointer',
+          color:       '#555',
+          padding:     2,
+          flexShrink:  0,
+          marginTop:   -2,
+          lineHeight:  1,
+          transition:  'color .15s',
         }}
+        onMouseEnter={e => e.currentTarget.style.color = '#aaa'}
+        onMouseLeave={e => e.currentTarget.style.color = '#555'}
       >
         <X size={14} />
       </button>
 
-      {/* Progress bar */}
+      {/* Progress bar track */}
       <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0, height: 3,
-        borderRadius: '0 0 14px 14px', overflow: 'hidden',
+        position:     'absolute',
+        bottom:       0,
+        left:         0,
+        right:        0,
+        height:       2,
+        background:   'rgba(255,255,255,0.08)',
       }}>
         <div style={{
-          height: '100%', background: cfg.accent, opacity: 0.35,
-          animation: 'snToastProgress 6s linear forwards',
+          height:    '100%',
+          background: cfg.accent,
+          animation: `snSlackProgress ${cfg.duration}ms linear forwards`,
         }} />
       </div>
     </div>
   );
 };
 
-/* ── Toast container (mount once in App) ── */
+/* ── Toast container (mount once in App — unchanged) ── */
 export default function ToastContainer() {
   const [toasts, setToasts] = useState([]);
   const counterRef = useRef(0);
 
   const addToast = useCallback((notif) => {
     const id = ++counterRef.current;
-    setToasts(prev => [...prev.slice(-4), { ...notif, id }]); // max 5 visible
-    // Save to IDB
+    setToasts(prev => [...prev.slice(-4), { ...notif, id }]);
     saveNotification({ tag: notif.type || 'default', title: notif.title, body: notif.body });
   }, []);
 
@@ -158,30 +236,40 @@ export default function ToastContainer() {
     setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
 
-  // Register global push function
-  useEffect(() => { _addToast = addToast; return () => { _addToast = null; }; }, [addToast]);
+  useEffect(() => {
+    _addToast = addToast;
+    return () => { _addToast = null; };
+  }, [addToast]);
 
   if (toasts.length === 0) return null;
 
   return (
     <>
       <style>{`
-        @keyframes snToastIn {
+        @keyframes snSlackIn {
           from { transform: translateX(110%); opacity: 0; }
           to   { transform: translateX(0);    opacity: 1; }
         }
-        @keyframes snToastProgress {
+        @keyframes snSlackProgress {
           from { width: 100%; }
-          to   { width: 0%; }
+          to   { width: 0%;   }
         }
       `}</style>
       <div style={{
-        position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
-        display: 'flex', flexDirection: 'column', gap: 10,
-        alignItems: 'flex-end',
+        position:       'fixed',
+        bottom:         24,
+        right:          24,
+        zIndex:         9999,
+        display:        'flex',
+        flexDirection:  'column',
+        gap:            8,
+        alignItems:     'flex-end',
+        pointerEvents:  'none',
       }}>
         {toasts.map(t => (
-          <Toast key={t.id} {...t} onDismiss={removeToast} />
+          <div key={t.id} style={{ pointerEvents: 'all' }}>
+            <Toast {...t} onDismiss={removeToast} />
+          </div>
         ))}
       </div>
     </>
