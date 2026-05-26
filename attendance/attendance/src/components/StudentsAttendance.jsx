@@ -172,39 +172,44 @@ const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
   // Attendance reminders (no lessons/teacherStatus needed here)
   useNotifications([], {}, isSubmitted);
 
-  /* Load students from backend */
+  /* Load students + check today's submission in parallel */
   useEffect(() => {
     setIsLoading(true);
     setApiError("");
-    api.getMyStudents()
-      .then((data) => {
-        const normalized = data.map((s) => ({
-          id: s.id, name: s.full_name, studentNumber: s.student_number, class: monitorClass,
-        }));
-        setStudents(normalized);
+    const today = new Date().toISOString().split("T")[0];
+
+    Promise.all([
+      api.getMyStudents(),
+      api.getAttendanceHistory().catch(() => []), // silent — don't block on failure
+    ]).then(([studentData, history]) => {
+      // Normalize students
+      const normalized = studentData.map((s) => ({
+        id: s.id, name: s.full_name, studentNumber: s.student_number, class: monitorClass,
+      }));
+      setStudents(normalized);
+
+      // Check if already submitted today
+      const todayRecord = history.find(h => h.session_date?.startsWith(today));
+      if (todayRecord) {
+        setApiError('ALREADY_SUBMITTED');
+        if (todayRecord.records?.length) {
+          const restored = {};
+          todayRecord.records.forEach(r => { restored[r.student_id] = r.status; });
+          setAttendance(restored);
+        } else {
+          // No per-student records — just default all to present
+          const init = {};
+          normalized.forEach((st) => (init[st.id] = "present"));
+          setAttendance(init);
+        }
+      } else {
         const init = {};
         normalized.forEach((st) => (init[st.id] = "present"));
         setAttendance(init);
-      })
-      .catch((err) => setApiError(err.message))
-      .finally(() => setIsLoading(false));
-
-    // Check if already submitted today
-    const today = new Date().toISOString().split("T")[0];
-    api.getAttendanceHistory()
-      .then((history) => {
-        const todayRecord = history.find(h => h.session_date?.startsWith(today));
-        if (todayRecord) {
-          setApiError('ALREADY_SUBMITTED');
-          // Restore the submitted statuses so pills show correctly
-          if (todayRecord.records?.length) {
-            const restored = {};
-            todayRecord.records.forEach(r => { restored[r.student_id] = r.status; });
-            setAttendance(restored);
-          }
-        }
-      })
-      .catch(() => {});
+      }
+    }).catch((err) => {
+      setApiError(err.message);
+    }).finally(() => setIsLoading(false));
   }, [monitorClass]);
 
   /* Load history when tab opens */
