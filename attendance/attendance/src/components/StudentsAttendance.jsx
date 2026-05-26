@@ -104,6 +104,54 @@ const Sidebar = ({ activePage, onNavigate, onBack, onLogout, mobileOpen, onMobil
   </>
 );
 
+/* ── Attendance window status ── */
+const getWindowInfo = () => {
+  const now   = new Date();
+  const h     = now.getHours();
+  const m     = now.getMinutes();
+  const total = h * 60 + m;
+  const time  = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+
+  if (total < 8 * 60) {
+    return {
+      type: 'waiting',
+      msg:  `Attendance window opens at 8:00 AM. Current time: ${time}.`,
+      bg:   '#fff7ed', border:'#fed7aa', color:'#c2410c', icon:'🕐',
+    };
+  }
+  if (total <= 8 * 60 + 30) {
+    return {
+      type: 'open',
+      msg:  `Window open · Submit before 8:30 AM. Current time: ${time}.`,
+      bg:   '#f0fdf4', border:'#bbf7d0', color:'#15803d', icon:'🟢',
+    };
+  }
+  return {
+    type: 'delayed',
+    msg:  `After 8:30 AM — submission will be marked DELAYED. Current time: ${time}.`,
+    bg:   '#fffbeb', border:'#fde68a', color:'#92400e', icon:'⚠️',
+  };
+};
+
+const WindowStatus = () => {
+  const [info, setInfo] = useState(getWindowInfo);
+  useEffect(() => {
+    const t = setInterval(() => setInfo(getWindowInfo()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <div style={{
+      display:'flex', alignItems:'center', gap:8,
+      background: info.bg, border:`1px solid ${info.border}`,
+      borderRadius:10, padding:'8px 14px', fontSize:12, fontWeight:600,
+      color: info.color, flex:1,
+    }}>
+      <span>{info.icon}</span>
+      <span>{info.msg}</span>
+    </div>
+  );
+};
+
 /* ── Main component ── */
 const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
   const [students,       setStudents]       = useState([]);
@@ -472,6 +520,7 @@ const StudentAttendance = ({ onBack, monitorClass = "Y1A" }) => {
 
                 {/* Submit */}
                 <div style={{ display:"flex", justifyContent:"flex-end", marginTop:24, alignItems:"center", gap:14 }}>
+                  <WindowStatus />
                   {apiError === 'ALREADY_SUBMITTED' && (
                     <div style={{ display:"flex", alignItems:"center", gap:8, background:"#f0fdf4", border:"1px solid #bbf7d0", borderRadius:10, padding:"9px 14px" }}>
                       <span style={{ fontSize:16 }}>✅</span>
