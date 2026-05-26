@@ -29,9 +29,9 @@ export const notify = async (title, body, tag) => {
 
   new Notification(title, {
     body,
-    tag,           // prevents duplicate notifications with same tag
-    icon: '/favicon.svg',
-    badge: '/favicon.svg',
+    tag,
+    icon: '/src/assets/log.png',
+    badge: '/src/assets/log.png',
     requireInteraction: false,
   });
 };

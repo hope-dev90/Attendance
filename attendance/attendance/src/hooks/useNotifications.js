@@ -14,7 +14,7 @@ const fireNotif = async (type, title, body, tag) => {
   if (!settings.enabled) return;
   if (Notification.permission === 'default') await Notification.requestPermission();
   if (Notification.permission !== 'granted') return;
-  new Notification(title, { body, tag, icon: '/favicon.svg', requireInteraction: false });
+  new Notification(title, { body, tag, icon: '/src/assets/log.png', requireInteraction: false });
 };
 
 export default function useNotifications(lessons, teacherStatus, attendanceSubmitted) {
