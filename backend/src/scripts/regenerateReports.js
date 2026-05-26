@@ -1,14 +1,11 @@
-/**
- * Regenerate reports for all sessions that don't have one yet.
- *   node src/scripts/regenerateReports.js
- */
+
 require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 const pool = require('../config/db');
 const { generateReport } = require('../controllers/reportController');
 
 (async () => {
   try {
-    // Find sessions without a report
+  
     const result = await pool.query(`
       SELECT asess.id AS session_id, asess.class_id, asess.session_date,
              c.name AS class_name, r.full_name AS rep_name

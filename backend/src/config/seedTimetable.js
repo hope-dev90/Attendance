@@ -9,7 +9,7 @@ const timetableData = require(path.resolve(__dirname, '../../../attendance/atten
 
 (async () => {
   try {
-    // Wipe old timetable
+    
     await pool.query('DELETE FROM timetable');
 
     let inserted = 0;

@@ -50,7 +50,7 @@ const schema = `
     UNIQUE(class_id, session_date)
   );
 
-  -- Add is_delayed if table already exists
+
   ALTER TABLE attendance_sessions ADD COLUMN IF NOT EXISTS is_delayed BOOLEAN DEFAULT FALSE;
 
   CREATE TABLE IF NOT EXISTS attendance_records (
