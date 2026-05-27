@@ -4,6 +4,7 @@ import Dashboard from './components/DashBoard';
 import LessonTracking from './components/LessonTracking';
 import StudentAttendance from './components/StudentsAttendance';
 import ToastContainer from './components/ToastNotification';
+import Footer from './components/Footer';
 import { api } from './api';
 
 function App() {
@@ -44,18 +45,23 @@ function App() {
   };
 
   if (!auth?.accessToken) {
-    return <Auth onLoginSuccess={handleLoginSuccess} />;
+    return (
+      <>
+        <Auth onLoginSuccess={handleLoginSuccess} />
+        <Footer />
+      </>
+    );
   }
 
   if (activeSection === 'teachers') {
-    // class_name comes from api.me(); fall back to class_id lookup if not yet loaded
     const classNames = ['Y1A','Y1B','Y1C','Y2A','Y2B','Y2C','Y3A','Y3B','Y3C','Y3D'];
     const resolvedClass = rep?.class_name || classNames[rep?.class_id - 1] || 'Y1A';
     return (
-      <LessonTracking
-        monitorClass={resolvedClass}
-        onBack={() => setActiveSection('dashboard')}
-      />
+      <>
+        <ToastContainer />
+        <LessonTracking monitorClass={resolvedClass} onBack={() => setActiveSection('dashboard')} />
+        <Footer />
+      </>
     );
   }
 
@@ -63,10 +69,11 @@ function App() {
     const classNames = ['Y1A','Y1B','Y1C','Y2A','Y2B','Y2C','Y3A','Y3B','Y3C','Y3D'];
     const resolvedClass = rep?.class_name || classNames[rep?.class_id - 1] || 'Y1A';
     return (
-      <StudentAttendance
-        monitorClass={resolvedClass}
-        onBack={() => setActiveSection('dashboard')}
-      />
+      <>
+        <ToastContainer />
+        <StudentAttendance monitorClass={resolvedClass} onBack={() => setActiveSection('dashboard')} />
+        <Footer />
+      </>
     );
   }
 
@@ -79,6 +86,7 @@ function App() {
         userEmail={rep?.email}
         rep={rep}
       />
+      <Footer />
     </>
   );
 }
