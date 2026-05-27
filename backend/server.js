@@ -18,9 +18,24 @@ const clientOrigins = [
   'http://127.0.0.1:3000',
 ].filter(Boolean);
 
+// Allow any device on the local network (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+const isLocalNetwork = (origin) => {
+  if (!origin) return true;
+  try {
+    const { hostname } = new URL(origin);
+    return (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      /^192\.168\./.test(hostname) ||
+      /^10\./.test(hostname) ||
+      /^172\.(1[6-9]|2\d|3[01])\./.test(hostname)
+    );
+  } catch { return false; }
+};
+
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || clientOrigins.includes(origin)) {
+    if (!origin || clientOrigins.includes(origin) || isLocalNetwork(origin)) {
       return callback(null, true);
     }
     return callback(new Error(`CORS blocked origin: ${origin}`));

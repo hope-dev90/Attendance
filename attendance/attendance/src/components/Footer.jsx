@@ -13,7 +13,7 @@ export default function Footer() {
       zIndex: 50,
       userSelect: 'none',
     }}>
-      Maintained by Team Éclat
+      Maintained by Team Ã‰clat
     </div>
   );
 }
