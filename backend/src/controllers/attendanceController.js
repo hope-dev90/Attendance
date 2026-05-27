@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { generateReport } = require('./reportController');
+const { deliverStudentAttendance } = require('../utils/staffnetDelivery');
 
 // Attendance window: 8:00 AM – 8:30 AM (on time), after 8:30 = delayed
 const WINDOW_START_HOUR = 8;   // 08:00
@@ -8,13 +9,15 @@ const WINDOW_END_HOUR   = 8;   // 08:30
 const WINDOW_END_MIN    = 30;
 
 const getSubmissionStatus = () => {
-  const now = new Date();
-  const hour = now.getHours();
-  const minute = now.getMinutes();
-  const totalMinutes = hour * 60 + minute;
-  const windowStart = WINDOW_START_HOUR * 60 + WINDOW_START_MIN;
-  const windowEnd   = WINDOW_END_HOUR   * 60 + WINDOW_END_MIN;
+  // TIME WINDOW TEMPORARILY DISABLED FOR STAFFNET INTEGRATION TESTING
+  // Re-enable by restoring the time checks below
+  return { allowed: true, delayed: false };
 
+  /* Original time window logic (re-enable when done testing):
+  const now = new Date();
+  const totalMinutes = now.getHours() * 60 + now.getMinutes();
+  const windowStart = 8 * 60;
+  const windowEnd   = 8 * 60 + 30;
   if (totalMinutes < windowStart) {
     return { allowed: false, delayed: false, reason: `Attendance window opens at 8:00 AM. Current time: ${now.toLocaleTimeString()}.` };
   }
@@ -22,6 +25,7 @@ const getSubmissionStatus = () => {
     return { allowed: true, delayed: false };
   }
   return { allowed: true, delayed: true, reason: `Submitted after 8:30 AM (${now.toLocaleTimeString()}). This will be marked as a delayed submission.` };
+  */
 };
 
 // Submit attendance for a session
@@ -143,6 +147,14 @@ const submitAttendance = async (req, res) => {
     } catch (reportErr) {
       console.error('Report generation error:', reportErr.message);
     }
+
+    // Deliver to StaffNet (fire-and-forget)
+    deliverStudentAttendance({
+      studentClass: meta?.class_name,
+      date:         session_date,
+      submittedBy:  `Monitor of ${meta?.class_name}`,
+      records:      records, // contains student_id, status, note from request body
+    });
 
     return res.status(201).json({
       message: timeStatus.delayed

@@ -2,14 +2,14 @@ const pool = require('../config/db');
 const path = require('path');
 const fs   = require('fs');
 const PDFDocument = require('pdfkit');
+const { deliverTeacherAttendance } = require('../utils/staffnetDelivery');
 
 const REPORTS_DIR = path.resolve(__dirname, '../../reports');
 if (!fs.existsSync(REPORTS_DIR)) fs.mkdirSync(REPORTS_DIR, { recursive: true });
 
-// POST /api/lesson-reports — submit end-of-day lesson report
 const submitLessonReport = async (req, res) => {
   const { report_date, lessons } = req.body;
-  // lessons: [{ timeSlot, subject, teacher, teacherPresent: true|false }]
+
   const repId   = req.rep.id;
   const classId = req.rep.classId || req.rep.class_id;
 
@@ -48,6 +48,17 @@ const submitLessonReport = async (req, res) => {
         className: meta?.class_name,
         reportDate: report_date,
         lessons,
+      });
+    }
+
+    // Deliver each lesson to StaffNet (fire-and-forget)
+    for (const lesson of lessons) {
+      deliverTeacherAttendance({
+        teacherName:    lesson.teacher,
+        subject:        lesson.subject,
+        date:           report_date,
+        teacherPresent: lesson.teacherPresent,
+        submittedBy:    `Monitor of ${meta?.class_name}`,
       });
     }
 

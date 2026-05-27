@@ -9,6 +9,65 @@ Authorization: Bearer <accessToken>
 
 ---
 
+## StaffNet External Submission APIs
+
+These are the receiving endpoints on StaffNet for the class-monitor developer.
+
+Base URL: `http://10.12.72.100:5001`
+
+No `termId` is required. StaffNet automatically links submissions to the active term.
+
+### POST `/api/external/teacher-attendance`
+Submit teacher lesson attendance.
+
+**Headers:**
+```
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "teacherName": "Mike Galen",
+  "subject": "Networking",
+  "date": "2026-05-27",
+  "status": "present",
+  "submittedBy": "Y1A Class Monitor"
+}
+```
+
+Valid `status` values: `"present"` | `"absent"`
+
+**Success:** `201 Created`
+
+### POST `/api/external/student-attendance`
+Submit student attendance for a class.
+
+**Headers:**
+```
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "studentClass": "Y1A",
+  "date": "2026-05-27",
+  "submittedBy": "Y1A Class Monitor",
+  "records": [
+    { "studentId": 101, "status": "present" },
+    { "studentId": 102, "status": "absent", "note": "Sick" },
+    { "studentId": 103, "status": "late" }
+  ]
+}
+```
+
+Valid `status` values: `"present"` | `"absent"` | `"late"` | `"excused"`
+
+**Success:** `201 Created`
+
+---
+
 ## Authentication `/api/auth`
 
 ### POST `/api/auth/signup`
