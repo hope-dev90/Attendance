@@ -9,6 +9,7 @@ import { api } from '../api';
 import LogoImg from '../assets/logo.jpg';
 import NotificationSettings, { notify } from './NotificationSettings';
 import useNotifications from '../hooks/useNotifications';
+import { pushToast } from './ToastNotification';
 
 const NAVY    = '#2e5a88';
 const NAVY_DK = '#1e3f63';
@@ -31,6 +32,27 @@ const isOngoing = (slot) => {
   return t >= start && t <= end;
 };
 
+// Has the lesson already ended?
+const isPast = (slot) => {
+  const t = getCurrentTimeStr();
+  const [, end] = slot.split('-');
+  return t > end;
+};
+
+// Has the lesson not started yet?
+const isFuture = (slot) => {
+  const t = getCurrentTimeStr();
+  const [start] = slot.split('-');
+  return t < start;
+};
+
+// Slot state: 'future' | 'ongoing' | 'past'
+const slotState = (slot) => {
+  if (isFuture(slot)) return 'future';
+  if (isOngoing(slot)) return 'ongoing';
+  return 'past';
+};
+
 const getTodayLessons = (timetable, monitorClass) => {
   const dayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
   const todayData = timetable.find(d => d.day === dayName);
@@ -39,7 +61,7 @@ const getTodayLessons = (timetable, monitorClass) => {
     .map(([slot, classes]) => {
       const lesson = classes[monitorClass];
       if (!lesson) return null;
-      return { timeSlot: slot, ...lesson, ongoing: isOngoing(slot) };
+      return { timeSlot: slot, ...lesson, ongoing: isOngoing(slot), state: slotState(slot) };
     })
     .filter(Boolean)
     .sort((a, b) => a.timeSlot.localeCompare(b.timeSlot));
@@ -215,6 +237,21 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
 
   useNotifications(lessons, teacherStatus, submitted);
 
+  // Every 3 minutes — remind if ongoing lesson not marked
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const ongoing = lessons.find(l => l.ongoing);
+      if (ongoing && teacherStatus[ongoing.timeSlot] === undefined && !submittedSlots.has(ongoing.timeSlot)) {
+        pushToast({
+          type: 'teacher',
+          title: '⏰ Reminder: Mark Teacher',
+          body: `${ongoing.subject} is ongoing. Has ${ongoing.teacher} arrived?`,
+        });
+      }
+    }, 3 * 60 * 1000); // every 3 minutes
+    return () => clearInterval(interval);
+  }, [lessons, teacherStatus, submittedSlots]);
+
   useEffect(() => {
     const update = () => { setLessons(getTodayLessons(timetableData, monitorClass)); setLoading(false); };
     update();
@@ -223,8 +260,11 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
   }, [monitorClass]);
 
   const mark = (slot, present) => {
-    // Once marked, cannot change — lock it
-    if (lockedSlots.has(slot)) return;
+    if (lockedSlots.has(slot)) {
+      // Already marked — show toast
+      pushToast({ type: 'teacher', title: 'Already Marked', body: `This lesson has already been marked as ${teacherStatus[slot] ? 'Present' : 'Absent'}.` });
+      return;
+    }
     setTeacherStatus(prev => ({ ...prev, [slot]: present }));
     setLockedSlots(prev => new Set([...prev, slot]));
   };
@@ -433,34 +473,50 @@ const LessonTrackingPage = ({ monitorClass = 'Y3A' }) => {
                     )}
                   </div>
                 ) : (
-                  <div className="sn-toggle-group">
-                    <button className="sn-toggle-btn"
-                      onClick={() => mark(lesson.timeSlot, true)}
-                      disabled={lockedSlots.has(lesson.timeSlot)}
-                      style={{
-                        background:    status===true ? '#10b981':'transparent',
-                        color:         status===true ? '#fff':'#94a3b8',
-                        boxShadow:     status===true ? '0 2px 6px rgba(16,185,129,.25)':'none',
-                        cursor:        lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
-                        opacity:       lockedSlots.has(lesson.timeSlot) && status!==true ? 0.35 : 1,
-                        pointerEvents: lockedSlots.has(lesson.timeSlot) ? 'none' : 'auto',
-                      }}>
-                      ✓ Present
-                    </button>
-                    <button className="sn-toggle-btn"
-                      onClick={() => mark(lesson.timeSlot, false)}
-                      disabled={lockedSlots.has(lesson.timeSlot)}
-                      style={{
-                        background:    status===false ? '#ef4444':'transparent',
-                        color:         status===false ? '#fff':'#94a3b8',
-                        boxShadow:     status===false ? '0 2px 6px rgba(239,68,68,.2)':'none',
-                        cursor:        lockedSlots.has(lesson.timeSlot) ? 'not-allowed' : 'pointer',
-                        opacity:       lockedSlots.has(lesson.timeSlot) && status!==false ? 0.35 : 1,
-                        pointerEvents: lockedSlots.has(lesson.timeSlot) ? 'none' : 'auto',
-                      }}>
-                      ✗ Absent
-                    </button>
-                  </div>
+                  /* Non-ongoing rows — show state-aware buttons */
+                  (() => {
+                    const state = lesson.state;
+                    const isLocked = lockedSlots.has(lesson.timeSlot);
+
+                    if (state === 'future') {
+                      // Not started yet — greyed out, no interaction
+                      return (
+                        <div className="sn-toggle-group" style={{ opacity:0.35, pointerEvents:'none' }}>
+                          <button className="sn-toggle-btn" style={{ background:'transparent', color:'#94a3b8' }}>✓ Present</button>
+                          <button className="sn-toggle-btn" style={{ background:'transparent', color:'#94a3b8' }}>✗ Absent</button>
+                        </div>
+                      );
+                    }
+
+                    if (state === 'past') {
+                      // Ended — show what was marked or "Not marked"
+                      if (isLocked) {
+                        return (
+                          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                            <span style={{
+                              background: status===true ? '#ecfdf5' : '#fff1f2',
+                              color:      status===true ? '#10b981' : '#ef4444',
+                              padding:'4px 12px', borderRadius:20, fontSize:11, fontWeight:800,
+                            }}>
+                              {status===true ? '✓ Present' : '✗ Absent'}
+                            </span>
+                            <span style={{ fontSize:10, color:'#94a3b8', fontWeight:600 }}>
+                              {submittedSlots.has(lesson.timeSlot) ? 'Submitted' : 'Marked'}
+                            </span>
+                          </div>
+                        );
+                      }
+                      // Past and not marked
+                      return (
+                        <span style={{ fontSize:11, fontWeight:700, color:'#94a3b8', background:'#f1f5f9', padding:'4px 12px', borderRadius:20 }}>
+                          — Not marked
+                        </span>
+                      );
+                    }
+
+                    // Fallback (shouldn't reach here for non-ongoing)
+                    return null;
+                  })()
                 )}
               </div>
             );
