@@ -235,7 +235,6 @@ const getAbsentees = async (req, res) => {
 // Get attendance history for the rep's class
 const getAttendanceHistory = async (req, res) => {
   const classId = req.rep.classId || req.rep.class_id;
-  console.log('getAttendanceHistory rep payload:', req.rep);
 
   if (!classId) {
     return res.status(400).json({ message: 'No class assigned to your account.' });

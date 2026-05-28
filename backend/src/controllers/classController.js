@@ -17,8 +17,8 @@ const getAllClasses = async (req, res) => {
     const result = await pool.query('SELECT * FROM classes ORDER BY name');
     return res.json(result.rows);
   } catch (err) {
-    console.error('Get classes error:', err.message);
-    return res.status(500).json({ message: 'Server error.' });
+    console.error('Get classes error:', err);
+    return res.status(500).json({ message: 'Server error.', error: err.message });
   }
 };
 
